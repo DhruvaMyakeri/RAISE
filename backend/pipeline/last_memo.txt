@@ -1,0 +1,108 @@
+MEMO: AI ROI — Meridian Assist
+
+TO: Chief Financial Officer, Meridian Retail Co.
+FROM: AI Investment Analysis Team
+RE: ROI Projection — Meridian Assist (Customer Support AI)
+
+---
+
+## Decision Framing
+
+Meridian Retail Co. is evaluating Meridian Assist: Deploy an AI Tier-1 support assistant to deflect routine tickets (order status, returns eligibility, password resets) before they reach human agents. The hosting architecture has not been finalized. This memo presents two scenarios — Scenario A — On-prem and Scenario B — Cloud — each modeled across conservative, likely, and optimistic financial assumptions. All ROI numbers are computed by a deterministic modeling tool; no LLM-generated arithmetic.
+
+---
+
+### Scenario A (on-prem)
+
+| Metric | Conservative | Likely | Optimistic |
+|--------|-------------|--------|------------|
+| 3-yr ROI | 3.7x | 5.7x | 6.6x |
+| Payback | 2.6 mo | 1.7 mo | 1.5 mo |
+| Annual value | $2.02M | $2.88M | $3.28M |
+| 3-yr total cost | $1.29M | $1.29M | $1.29M |
+| Tickets deflected/yr | 167,993 | 239,990 | 273,600 |
+
+**Cost breakdown (likely):**
+  Build: $380K | Inference Y1: $26K | Integration Y1: $171K | Model-update Y1: $46K
+  Y2 non-linear scale: Integration $231K, Model-update $68K
+
+**Flagged assumptions:**
+  - assumption, not validated: Deflection: 50% overall (tier1_share=60%, implied tier1=83.3%): The implied Tier-1 deflection rate of 83.3% significantly exceeds the benchmark of ~68% for routine intents. While the company documents show a claimed Tier1 Deflection Rate of 0.5 (50%), the math (50%/60%) yields 83.3%, which is not supported by the benchmark. The company evidence does not bridge this gap. (ref: cs_tier1_deflection)
+  - assumption, not validated: Inference budget: $48,000 vs build $380,000: The $48K inference budget represents only ~12.6% of the $380K build cost. The benchmark indicates true operating cost is often 3-5x the build estimate ($1.14M–$1.9M expected), meaning $48K appears substantially understated. Additionally, the benchmark specifies that total cost includes inference, integration, and model-update cycles—integration and update costs scale non-linearly in year 2+. A single line-item inference budget does not account for these factors. (ref: htec_true_op_cost)
+  - assumption, not validated: hosting_architecture=on_prem (user unknown; branch A_on_prem)
+  - output sanity check: Computed payback (1.7 months) is below the minimum realistic threshold (6 months) established across all benchmark sources. This suggests the implementation cost estimate may be understated relative to the company's operational scale — recommend validating the cost estimate before relying on this projection.
+
+**Citations:**
+  - [cs_tier1_deflection] Customer-service chatbots commonly resolve about 68% of Tier-1 tickets when scoped to routine intents. (source: Customer service chatbot resolution benchmarks (published industry figures))
+  - [htec_true_op_cost] True operating cost of an AI system is often 3–5x the initial build estimate once inference at scale, integration, and model-update cycles are included. (source: HTEC AI cost / ROI framework)
+  - [nvidia_sector_adoption] Industry adoption and realized ROI for AI vary by sector; retail and consumer-facing operations are active adopters but outcomes depend on use-case fit and operating model. (source: NVIDIA State of AI Report 2026)
+  - [htec_roi_formula] ROI = (Total Business Value − Total Cost) / Total Cost, where Total Cost includes build, inference at scale, integration, and model-update cycles. Integration and model-update costs scale non-linearly in year 2+ rather than staying flat. (source: HTEC AI cost / ROI framework)
+
+**Explainability (Scenario A):**
+Cost impact  
+Driven by initial_build_cost_usd ($380K, real data) and modeled operating costs (inference, integration, model updates). Flagged assumptions: annual_inference_budget_usd ($48K) likely understated per benchmark (3–5× build cost), and integration/update costs scale non‑linearly in Year 2+. Hosting architecture (on‑prem) assumed but user unknown. Confidence: 60.
+
+Quality impact  
+Driven by claimed_tier1_deflection_rate (83.3%, flagged) and tier1_ticket_share (60%, real data) applied to annual_ticket_volume (480K, real data). Flagged assumption: implied Tier‑1 deflection of 83.3% exceeds benchmark (~68%) and company evidence doesn’t bridge the gap. Confidence: 45.
+
+Speed to value  
+Driven by payback_months (1.5–2.6) from annual_value_usd (tickets_deflected × cost_per_ticket_usd) vs year1_cost_usd. Flagged: deflection rate assumption inflates value; output sanity check flags payback below minimum realistic threshold (6 months). Confidence: 35.
+
+Process impact  
+Driven by tickets_deflected_annual (168K–274K) from annual_ticket_volume, tier1_ticket_share, and deflection_rate. Flagged: deflection rate assumption; process change success assumes seamless integration not validated. Confidence: 55.
+
+Technology impact  
+Driven by hosting_architecture (on‑prem, flagged as user unknown), initial_build_cost_usd, and modeled inference/update cycles. Flagged: on‑prem assumption unverified; inference budget understated; integration/update costs scale non‑linearly per benchmark. Confidence: 50.
+
+Overall confidence is approximately 50% given heavy reliance on three flagged assumptions (deflection rate, inference budget, hosting architecture) and a sanity‑check payback violation.
+
+---
+
+### Scenario B (cloud)
+
+| Metric | Conservative | Likely | Optimistic |
+|--------|-------------|--------|------------|
+| 3-yr ROI | 4.3x | 6.6x | 7.7x |
+| Payback | 2.5 mo | 1.7 mo | 1.5 mo |
+| Annual value | $2.02M | $2.88M | $3.28M |
+| 3-yr total cost | $1.14M | $1.14M | $1.14M |
+| Tickets deflected/yr | 167,993 | 239,990 | 273,600 |
+
+**Cost breakdown (likely):**
+  Build: $380K | Inference Y1: $65K | Integration Y1: $84K | Model-update Y1: $57K
+  Y2 non-linear scale: Integration $113K, Model-update $86K
+
+**Flagged assumptions:**
+  - assumption, not validated: Deflection: 50% overall (tier1_share=60%, implied tier1=83.3%): The company's implied Tier-1 deflection rate of 83.3% significantly exceeds the benchmark of ~68% for routine intents. While 50% overall is within the typical 20-35% range, the math (50%/60%=83.3%) pushes Tier-1 performance beyond documented industry norms. No pilot/measured evidence provided to support this specific rate. (ref: cs_tier1_deflection)
+  - assumption, not validated: Inference budget: $48,000 vs build $380,000: The $48K inference budget represents only ~12.6% of the $380K build cost, which contradicts the HTEC benchmark that true operating costs are often 3-5x the initial build estimate. This ratio is suspiciously low compared to industry norms for inference at scale, integration, and model-update cycles. (ref: htec_true_op_cost)
+  - assumption, not validated: hosting_architecture=cloud (user unknown; branch B_cloud)
+  - output sanity check: Computed 3-year ROI (6.6x) exceeds the benchmark-realistic ceiling (5.8x) even after input-claim clamping. This suggests the implementation cost estimate may be understated relative to the company's operational scale — recommend validating the cost estimate before relying on this projection.
+  - output sanity check: Computed payback (1.7 months) is below the minimum realistic threshold (6 months) established across all benchmark sources. This suggests the implementation cost estimate may be understated relative to the company's operational scale — recommend validating the cost estimate before relying on this projection.
+
+**Citations:**
+  - [cs_tier1_deflection] Customer-service chatbots commonly resolve about 68% of Tier-1 tickets when scoped to routine intents. (source: Customer service chatbot resolution benchmarks (published industry figures))
+  - [htec_true_op_cost] True operating cost of an AI system is often 3–5x the initial build estimate once inference at scale, integration, and model-update cycles are included. (source: HTEC AI cost / ROI framework)
+  - [nvidia_sector_adoption] Industry adoption and realized ROI for AI vary by sector; retail and consumer-facing operations are active adopters but outcomes depend on use-case fit and operating model. (source: NVIDIA State of AI Report 2026)
+  - [htec_roi_formula] ROI = (Total Business Value − Total Cost) / Total Cost, where Total Cost includes build, inference at scale, integration, and model-update cycles. Integration and model-update costs scale non-linearly in year 2+ rather than staying flat. (source: HTEC AI cost / ROI framework)
+
+**Explainability (Scenario B):**
+Cost impact: Driven by ticket volume (480k), cost/ticket ($12), tier1 share (60%), tier1 deflection (83.3%), build cost ($380k), and inference budget ($48k). Flagged assumptions: tier1 deflection of 83.3% exceeds the 68% benchmark (cs_tier1_deflection); inference budget is only 12.6% of build vs. 3–5× benchmark (htec_true_op_cost). Confidence: 65/100.
+
+Quality impact: Driven by tier1 deflection rate (83.3%) and volume. Flagged: same deflection assumption (cs_tier1_deflection) inflates quality gains without pilot evidence. Confidence: 55/100.
+
+Speed to value: Driven by 1.7‑month payback (likely), $380k build, $2.88M annual value. Flagged: low inference budget (htec_true_op_cost) and high deflection (cs_tier1_deflection) compress payback unrealistically; sanity check notes payback below 6‑month minimum. Confidence: 50/100.
+
+Process impact: Driven by 240k tickets deflected annually (likely), 60% tier1 share, 83.3% tier1 deflection. Flagged: deflection assumption (cs_tier1_deflection) drives volume with no measured support. Confidence: 60/100.
+
+Technology impact: Driven by cloud hosting, $380k build, $48k inference, $83.6k integration Y1, $57k model updates Y1. Flagged: hosting architecture unspecified by user; inference budget ratio (htec_true_op_cost) suggests understated ops costs. Confidence: 55/100.
+
+Overall confidence: Major projections depend on two unvalidated assumptions exceeding benchmarks, yielding moderate confidence of approximately 57/100.
+
+---
+
+## Recommendation
+
+Scenario B (Cloud) dominates across all metrics: it delivers higher ROI in every scenario (4.33x–7.67x vs 3.68x–6.62x for On-prem), at a lower 3-year cost ($1.14M vs $1.29M), and with higher model confidence (65 vs 60). The $156,700 cost savings is material. Critically, both scenarios carry identical flagged assumptions—same Tier-1 deflection rate (83.3% vs 68% benchmark) and same inference budget understatement ($48K vs $1.14M–$1.9M expected)—so Scenario B's higher ROI does not come with proportionally more risk from unvalidated assumptions. The hosting architecture assumption (cloud vs on-prem) is unknown in both cases. Confidence is constrained by shared unvalidated assumptions: the Tier-1 deflection rate of 83.3% exceeds the 68% benchmark, and the $48K inference budget likely understates true operating costs by 3–5x per industry benchmarks.
+
+---
+*All projections use company-provided inputs where available. Flagged assumptions are based on curated industry benchmarks (McKinsey, HTEC, Deloitte, NVIDIA State of AI). This memo is not financial advice.*

@@ -1,0 +1,97 @@
+MEMO: AI ROI — Novavita Dynamic Creative
+
+TO: Chief Financial Officer, Novavita Health Tech
+FROM: AI Investment Analysis Team
+RE: ROI Projection — Novavita Dynamic Creative (Marketing AI)
+
+---
+
+## Decision Framing
+
+Novavita Health Tech is evaluating Novavita Dynamic Creative: Integration of a dynamic creative optimization platform to personalize digital ad variants based on real-time user demographic and browsing behavior data. The data enrichment strategy has not been finalized. This memo presents two scenarios — Scenario A — First-party only and Scenario B — Third-party enrichment — each modeled across conservative, likely, and optimistic financial assumptions. All ROI numbers are computed by a deterministic modeling tool; no LLM-generated arithmetic.
+
+---
+
+### Scenario A (first-party-only)
+
+| Metric | Conservative | Likely | Optimistic |
+|--------|-------------|--------|------------|
+| 3-yr ROI | 3.2x | 3.3x | 3.3x |
+| Payback | 4.2 mo | 4.1 mo | 4.1 mo |
+| Annual value | $572K | $581K | $581K |
+| 3-yr total cost | $408K | $408K | $408K |
+| Additional conversions/yr | 4,763 | 4,838 | 4,838 |
+
+**Cost breakdown (likely):**
+  Build: $180K | Inference Y1: $6K | Integration Y1: $36K | Model-update Y1: $18K
+  Y2 non-linear scale: Integration $49K, Model-update $27K
+
+**Flagged assumptions:**
+  - assumption, not validated: Conversion lift: 45%: The claimed 45% conversion lift is explicitly flagged in company docs as fabricated, intentionally exceeding the 32% absolute ceiling for deep integrations and the realistic 20-25% range for SaaS-only adoption. This claim is not defensible against any benchmark. (ref: realistic_marketing_roi_range)
+  - assumption, not validated: Inference/operating budget: $8,400 vs $180,000 build: No operating-cost benchmark exists in the provided benchmark set. While the cost comparison may be structurally valid, it cannot be validated against any established benchmark, making it unverifiable within the given framework.
+  - assumption, not validated: hosting_architecture=first_party_only (user unknown; branch A_first_party_only)
+  - output sanity check: Computed 3-year ROI (3.3x) exceeds the benchmark-realistic ceiling (3.2x) even after input-claim clamping. This suggests the implementation cost estimate may be understated relative to the company's operational scale — recommend validating the cost estimate before relying on this projection.
+  - output sanity check: Computed payback (4.1 months) is below the minimum realistic threshold (6 months) established across all benchmark sources. This suggests the implementation cost estimate may be understated relative to the company's operational scale — recommend validating the cost estimate before relying on this projection.
+
+**Citations:**
+  - [realistic_marketing_roi_range] Defensible long-term outcomes for mature, integrated marketing architectures center around moderate return lifts or clear application-specific multiples. (source: Cross-Source Analyst Consensus)
+
+**Explainability (Scenario A):**
+Cost impact: Driven by real company data for initial build ($180K) and integration costs, but annual inference budget ($8.4K) and operating cost structure are flagged assumptions with no benchmark validation. The 3-year total cost of $407K relies on unverified operating cost ratios. Confidence: 65.
+
+Speed to value: Payback of 4.1 months is primarily driven by the fabricated 45% conversion lift claim, which inflates annual value to ~$580K. Benchmark data indicates realistic payback minimum is 6 months, and the lift claim exceeds the 32% absolute ceiling. Confidence: 35.
+
+Process impact: Additional conversions (4,763–4,838 annually) derive from real ad spend ($150K/month), conversion rate (2.1%), and AOV ($120), but the 45% lift multiplier is explicitly flagged as fabricated and indefensible. Effective lift clamped to 31.5–32% still exceeds realistic 20–25% SaaS range. Confidence: 50.
+
+Technology impact: First-party-only architecture choice is a real strategic input, but the hosting assumption is flagged as user-unknown. The $8.4K inference vs $180K build ratio lacks any benchmark validation, making technology cost efficiency unverifiable. Confidence: 55.
+
+Overall confidence: The projection's reliance on a fabricated conversion lift and unverified operating costs renders the ROI materially overstated; recommend re-baselining with validated inputs before investment decisions.
+
+---
+
+### Scenario B (third-party-enrichment)
+
+| Metric | Conservative | Likely | Optimistic |
+|--------|-------------|--------|------------|
+| 3-yr ROI | 1.6x | 1.6x | 1.6x |
+| Payback | 4.9 mo | 4.8 mo | 4.8 mo |
+| Annual value | $572K | $581K | $581K |
+| 3-yr total cost | $661K | $661K | $661K |
+| Additional conversions/yr | 4,763 | 4,838 | 4,838 |
+
+**Cost breakdown (likely):**
+  Build: $180K | Inference Y1: $13K | Integration Y1: $81K | Model-update Y1: $32K
+  Y2 non-linear scale: Integration $109K, Model-update $49K
+
+**Flagged assumptions:**
+  - assumption, not validated: Conversion lift: 45% claimed: The claimed 45% conversion lift significantly exceeds the benchmark ceiling of 32% and the realistic range of 20-25% for SaaS-only adoption. The company notes explicitly state this figure is fabricated to trigger the pushback path. (ref: realistic_marketing_roi_range)
+  - assumption, not validated: Inference/operating budget: $8,400 vs build $180,000: No operating-cost benchmark exists in the provided benchmark set to validate this claim. The cost-structure comparison cannot be assessed against available benchmarks.
+  - assumption, not validated: hosting_architecture=third_party_enrichment (user unknown; branch B_third_party_enrichment)
+  - output sanity check: Computed payback (4.8 months) is below the minimum realistic threshold (6 months) established across all benchmark sources. This suggests the implementation cost estimate may be understated relative to the company's operational scale — recommend validating the cost estimate before relying on this projection.
+
+**Citations:**
+  - [realistic_marketing_roi_range] Defensible long-term outcomes for mature, integrated marketing architectures center around moderate return lifts or clear application-specific multiples. (source: Cross-Source Analyst Consensus)
+
+**Explainability (Scenario B):**
+Cost impact  
+Driven by initial_build_cost_usd ($180k), annual_inference_budget_usd ($8.4k), integration ($81k Y1/$109k Y2), and model_update ($32k Y1/$49k Y2) from the cost breakdown. Flagged: inference budget lacks benchmark validation; hosting architecture assumed third-party enrichment; payback (4.8 mo) below 6-month minimum suggesting understated costs. Confidence: 55.
+
+Speed to value  
+Driven by payback_months (4.8–4.9) and effective_conversion_lift (31.5–32%) applied to monthly_ad_spend_usd ($150k) and average_order_value_usd ($120). Flagged: claimed 45% lift fabricated per company notes; payback violates 6-month benchmark floor. Confidence: 50.
+
+Process impact  
+Driven by effective_conversion_lift (31.5–32%) on current_conversion_rate (2.1%) yielding additional_conversions_annual (4,763–4,838) at average_order_value_usd ($120). Flagged: claimed 45% lift fabricated, exceeding 32% benchmark ceiling and 20–25% realistic range. Confidence: 45.
+
+Technology impact  
+Driven by data_enrichment_strategy (third_party_enrichment) determining integration and model_update cost structure. Flagged: hosting_architecture assumed third_party_enrichment without user confirmation; inference budget unvalidated against benchmarks. Confidence: 55.
+
+Overall confidence is low due to fabricated conversion lift, unvalidated operating costs, assumed architecture, and payback period violating benchmark minimums.
+
+---
+
+## Recommendation
+
+Scenario A is recommended despite carrying more flagged assumptions, because the cost advantage is substantial ($254K lower over 3 years) and the ROI differential is large (3.27x vs 1.63x). Both scenarios share the same critical unvalidated assumptions (fabricated 45% conversion lift exceeding the 32% benchmark ceiling, and an unverifiable operating budget), so neither branch has a clean risk profile. Scenario A's additional output sanity check flags that both ROI and payback may be understated — this is a cost-validation concern, not a value-overstatement risk, and it applies equally to Scenario B's payback check. The hosting architecture assumption is also unvalidated for both branches. Recommendation confidence is moderate: both branches rely on a fabricated conversion-lift claim and an unverifiable operating budget, and both produce payback periods below the 6-month realistic threshold — suggesting cost estimates should be validated before committing capital.
+
+---
+*All projections use company-provided inputs where available. Flagged assumptions are based on curated industry benchmarks (McKinsey, HTEC, Deloitte, NVIDIA State of AI). This memo is not financial advice.*

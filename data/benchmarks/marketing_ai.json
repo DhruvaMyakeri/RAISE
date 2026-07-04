@@ -1,0 +1,127 @@
+{
+  "category": "Marketing AI",
+  "honesty_note": "Curated published survey figures, paraphrased for citation — not an independent primary dataset. All citation_types are secondary (no original primary research conducted).",
+  "facts": [
+    {
+      "id": "adoption_vs_value_gap",
+      "claim": "While the vast majority of enterprises deploy artificial intelligence within at least one core corporate function, a minor fraction of organizations achieve substantial bottom-line efficiency increases.",
+      "metric": "deployment_vs_value_realization",
+      "value": {"deployed": 0.88, "high_performers": 0.06},
+      "unit": "fraction",
+      "source": "McKinsey, The State of AI in 2025",
+      "source_year": 2025,
+      "applies_to": ["Marketing AI", "Customer Support AI", "Predictive Maintenance AI"],
+      "usage_note": "Use this fact as context to challenge claims that tool deployment automatically equates to enterprise value realization."
+    },
+    {
+      "id": "poc_abandonment_rate",
+      "claim": "Nearly one-third of generative AI initiatives are discontinued following the initial trial phase due to obstacles surrounding data cleanliness, unpredicted deployment costs, and unproven business results.",
+      "metric": "poc_abandonment_rate",
+      "value": 0.30,
+      "unit": "fraction",
+      "source": "Gartner",
+      "source_year": null,
+      "applies_to": ["Marketing AI", "Customer Support AI", "Predictive Maintenance AI"],
+      "usage_note": "Apply this metric to discount financial forecasts that assume all exploratory pilots successfully scale to full operational maturity."
+    },
+    {
+      "id": "cmo_budget_allocation",
+      "claim": "Chief Marketing Officers dedicate a noticeable percentage of their operational funding to intelligence tools, despite widespread internal recognition that existing team structures lack the maturity to optimize the technology.",
+      "metric": "ai_share_of_marketing_budget",
+      "value": {"min": 0.151, "max": 0.153},
+      "unit": "fraction",
+      "source": "Gartner 2026 CMO Spend Survey",
+      "source_year": 2026,
+      "applies_to": ["Marketing AI"],
+      "usage_note": "Utilize this baseline range to determine if a target organization's project spending aligns with standard industry capital allocation strategies."
+    },
+    {
+      "id": "mature_cohort_investment",
+      "claim": "A small segment of highly mature corporate marketing teams secure expanded baseline budgets and assign significantly larger financial allocations to automated tools.",
+      "metric": "ai_share_of_budget_mature_orgs",
+      "value": 0.213,
+      "unit": "fraction",
+      "source": "Gartner 2026 CMO Spend Survey",
+      "source_year": 2026,
+      "applies_to": ["Marketing AI"],
+      "usage_note": "Treat this figure as an absolute ceiling for marketing budget allocation, applicable only to mature digital operations."
+    },
+    {
+      "id": "use_case_roi_content_drafting",
+      "claim": "AI-powered content drafting systems show the highest isolated marketing ROI among measured applications.",
+      "metric": "application_roi_multiple",
+      "value": 3.2,
+      "unit": "x",
+      "source": "McKinsey",
+      "source_year": null,
+      "applies_to": ["Marketing AI"],
+      "usage_note": "Deploy this granular multiplier to validate functional claims for content generation rather than accepting broad, unsegmented return assumptions."
+    },
+    {
+      "id": "use_case_roi_personalization",
+      "claim": "Personalization engines yield moderate-to-strong ROI among isolated marketing AI applications.",
+      "metric": "application_roi_multiple",
+      "value": 2.7,
+      "unit": "x",
+      "source": "McKinsey",
+      "source_year": null,
+      "applies_to": ["Marketing AI"],
+      "usage_note": "Deploy this granular multiplier to validate functional claims for personalization rather than accepting broad, unsegmented return assumptions."
+    },
+    {
+      "id": "use_case_roi_audience_targeting",
+      "claim": "AI audience targeting and research tools deliver measurable but lower ROI compared to content generation applications.",
+      "metric": "application_roi_multiple",
+      "value": 2.4,
+      "unit": "x",
+      "source": "McKinsey",
+      "source_year": null,
+      "applies_to": ["Marketing AI"],
+      "usage_note": "Deploy this granular multiplier to validate functional claims for audience targeting rather than accepting broad, unsegmented return assumptions."
+    },
+    {
+      "id": "use_case_roi_ad_copy_optimization",
+      "claim": "Ad copy optimization solutions show the lowest ROI among the measured isolated marketing AI applications.",
+      "metric": "application_roi_multiple",
+      "value": 2.3,
+      "unit": "x",
+      "source": "McKinsey",
+      "source_year": null,
+      "applies_to": ["Marketing AI"],
+      "usage_note": "Deploy this granular multiplier to validate functional claims for ad copy optimization rather than accepting broad, unsegmented return assumptions."
+    },
+    {
+      "id": "integrated_workflow_performance",
+      "claim": "Deeply embedding automated features directly into marketing workflows yields noticeable gains in user acquisition efficiency, customer response rates, and absolute return performance.",
+      "metric": "integrated_workflow_gains",
+      "value": {"roi_lift": 0.22, "conversion_increase": 0.32, "cac_reduction": 0.29},
+      "unit": "fraction",
+      "source": "McKinsey / Zebracat",
+      "source_year": null,
+      "applies_to": ["Marketing AI"],
+      "usage_note": "Apply these optimal benchmarks only when a company presents verified plans for deep business workflow transformations."
+    },
+    {
+      "id": "realistic_marketing_roi_range",
+      "claim": "Defensible long-term outcomes for mature, integrated marketing architectures center around moderate return lifts or clear application-specific multiples.",
+      "metric": "realistic_roi_range",
+      "value": {"application_roi": {"min": 2.3, "max": 3.2}, "campaign_roi_lift": {"min": 0.20, "max": 0.25}},
+      "unit": "x or fraction",
+      "source": "Cross-Source Analyst Consensus",
+      "source_year": null,
+      "applies_to": ["Marketing AI"],
+      "usage_note": "Establish this range as the realistic baseline for core financial models validating long-term campaign returns."
+    },
+    {
+      "id": "payback_period_bifurcation",
+      "claim": "The time required to fully break even on investments differs significantly depending on whether a company chooses basic cloud subscriptions or implements highly customized software configurations.",
+      "metric": "payback_months_by_type",
+      "value": {"saas": {"max": 6}, "custom": {"min": 12, "max": 18}},
+      "unit": "months",
+      "source": "Cross-Source Analyst Consensus",
+      "source_year": null,
+      "applies_to": ["Marketing AI"],
+      "usage_note": "Flag any business plan claiming a sub-six-month capital recovery for deeply customized integrations as overly optimistic."
+    }
+  ]
+}

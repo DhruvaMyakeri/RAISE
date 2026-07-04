@@ -1,0 +1,105 @@
+MEMO: AI ROI — Apex PredictGuard
+
+TO: Chief Financial Officer, Apex Precision Components
+FROM: AI Investment Analysis Team
+RE: ROI Projection — Apex PredictGuard (Predictive Maintenance AI)
+
+---
+
+## Decision Framing
+
+Apex Precision Components is evaluating Apex PredictGuard: Deployment of continuous acoustic emission and vibration sensors across milling machines and CNC units tied to a centralized predictive anomaly detection engine. The hardware deployment method has not been finalized. This memo presents two scenarios — Scenario A — Retrofit and Scenario B — New install — each modeled across conservative, likely, and optimistic financial assumptions. All ROI numbers are computed by a deterministic modeling tool; no LLM-generated arithmetic.
+
+---
+
+### Scenario A (retrofit)
+
+| Metric | Conservative | Likely | Optimistic |
+|--------|-------------|--------|------------|
+| 3-yr ROI | 2.2x | 2.6x | 3.0x |
+| Payback | 4.3 mo | 3.8 mo | 3.4 mo |
+| Annual value | $1.26M | $1.41M | $1.56M |
+| 3-yr total cost | $1.18M | $1.18M | $1.18M |
+| Maintenance savings/yr | $333K | $333K | $333K |
+| Avoided downtime value/yr | $924K | $1.08M | $1.23M |
+
+**Cost breakdown (likely):**
+  Build: $380K | Inference Y1: $10K | Integration Y1: $114K | Model-update Y1: $84K
+  Y2 non-linear scale: Integration $154K, Model-update $125K
+
+**Flagged assumptions:**
+  - assumption, not validated: Maintenance spend reduction: 35%: The 35% claim is explicitly noted as fabricated, intentionally exceeding the independent mid-market baseline of 11-18% documented in both mid_market_realistic_target_range and mid_market_savings_reality. This is roughly 2-3x higher than the realistic benchmark range. (ref: mid_market_realistic_target_range)
+  - assumption, not validated: Inference/operating budget: $12,000 vs $380,000 build: At 3.16% of build cost, the $12,000 annual inference budget falls well below the documented 15-25% recurring operational cost range from mid_market_implementation_tco. This suggests an unrealistically low operating cost projection. (ref: mid_market_implementation_tco)
+  - assumption, not validated: hosting_architecture=retrofit (user unknown; branch A_retrofit)
+  - output sanity check: Computed payback (3.8 months) is below the minimum realistic threshold (6 months) established across all benchmark sources. This suggests the implementation cost estimate may be understated relative to the company's operational scale — recommend validating the cost estimate before relying on this projection.
+
+**Citations:**
+  - [mid_market_realistic_target_range] Typical mid-market industrial outcomes yield standard drops in overall facility spending alongside targeted efficiency improvements on monitored assets. (source: Cross-Source Industrial Consensus)
+  - [mid_market_implementation_tco] Instrumenting standard asset groups inside a single plant incurs defined integration fees alongside predictable annual subscription and management overhead. (source: Ditstek Innovations / Factory AI)
+
+**Explainability (Scenario A):**
+**Cost impact**  
+Driven by $1.85M maintenance spend (real) with modeled 18% effective reduction ($333K/yr) and $3.08M downtime cost with 30–40% avoidance ($924K–$1.23M/yr). Flagged: claimed 35% maintenance reduction is fabricated (benchmark 11–18%), and 3.8-month payback violates the 6-month minimum threshold. Confidence: 55.
+
+**Quality impact**  
+Reflected in effective 18% maintenance reduction (vs. claimed 35%) and 30–40% downtime reduction across scenarios. Flagged: the 35% reduction claim is explicitly fabricated per retrieval notes, making quality improvement projections speculative. Confidence: 60.
+
+**Speed to value**  
+Payback of 3.4–4.3 months driven by $587K Year 1 cost (build $380K + integration $114K + model updates $84K + inference $10K) against $1.26M–$1.57M annual value. Flagged: payback falls below the 6-month realistic minimum from all benchmarks, suggesting understated implementation costs. Confidence: 45.
+
+**Process impact**  
+Retrofit deployment (assumed, not decided) drives integration costs of $114K Year 1 and $154K Year 2, plus model updates of $84K/$125K. Flagged: hosting_architecture=retrofit is user-unknown per retrieval, adding uncertainty to integration complexity and cost. Confidence: 65.
+
+**Technology impact**  
+Build cost $380K (real) with annual inference budget $12K (3.16% of build) driving Year 1 inference cost $9.6K. Flagged: $12K inference budget is far below the 15–25% recurring operational cost benchmark (mid_market_implementation_tco), indicating likely underestimation. Confidence: 50.
+
+Overall confidence is approximately 55% due to fabricated maintenance reduction, unrealistically low inference budget, and sub-threshold payback.
+
+---
+
+### Scenario B (new-install)
+
+| Metric | Conservative | Likely | Optimistic |
+|--------|-------------|--------|------------|
+| 3-yr ROI | 1.8x | 2.1x | 2.4x |
+| Payback | 4.6 mo | 4.0 mo | 3.5 mo |
+| Annual value | $1.26M | $1.41M | $1.56M |
+| 3-yr total cost | $1.37M | $1.37M | $1.37M |
+| Maintenance savings/yr | $333K | $333K | $333K |
+| Avoided downtime value/yr | $924K | $1.08M | $1.23M |
+
+**Cost breakdown (likely):**
+  Build: $380K | Inference Y1: $16K | Integration Y1: $209K | Model-update Y1: $38K
+  Y2 non-linear scale: Integration $282K, Model-update $57K
+
+**Flagged assumptions:**
+  - assumption, not validated: 35% maintenance spend reduction: The 35% claim significantly exceeds the independent mid-market baseline of 11-18% documented in both mid_market_realistic_target_range and mid_market_savings_reality. Company notes explicitly confirm this figure is fabricated to trigger the pushback path. (ref: mid_market_realistic_target_range)
+  - assumption, not validated: $12,000 inference budget vs $380,000 build: The implied ~3.2% recurring cost ratio falls well below the documented 15-25% annual operating cost range from mid_market_implementation_tco, suggesting an unrealistic cost structure. (ref: mid_market_implementation_tco)
+  - assumption, not validated: hosting_architecture=new_install (user unknown; branch B_new_install)
+  - output sanity check: Computed payback (4.0 months) is below the minimum realistic threshold (6 months) established across all benchmark sources. This suggests the implementation cost estimate may be understated relative to the company's operational scale — recommend validating the cost estimate before relying on this projection.
+
+**Citations:**
+  - [mid_market_realistic_target_range] Typical mid-market industrial outcomes yield standard drops in overall facility spending alongside targeted efficiency improvements on monitored assets. (source: Cross-Source Industrial Consensus)
+  - [mid_market_implementation_tco] Instrumenting standard asset groups inside a single plant incurs defined integration fees alongside predictable annual subscription and management overhead. (source: Ditstek Innovations / Factory AI)
+
+**Explainability (Scenario B):**
+Cost impact: Driven by real maintenance spend ($1.85M) and downtime cost ($3.08M) yielding $333k annual maintenance savings (18% effective vs 35% claimed) and $924k–$1.23M avoided downtime value. Flagged assumptions: 35% reduction rate fabricated (exceeds 11–18% baseline); inference budget unrealistic vs build cost. Confidence: 70.
+
+Quality impact: Derived from downtime reduction applied (30–40% across scenarios) and effective maintenance spend reduction (18% vs claimed 35%). Flagged assumptions: 35% claim fabricated; payback sanity check suggests implementation costs understated, inflating perceived quality gains. Confidence: 50.
+
+Speed to value: Modeled payback 3.5–4.6 months driven by year‑1 value ($1.26M–$1.57M) exceeding year‑1 cost ($643k). Flagged assumptions: payback below 6‑month minimum realistic threshold; build cost ($380k) may be understated per benchmark. Confidence: 40.
+
+Process impact: Shaped by integration costs ($209k Y1, $282k Y2) and model update costs ($38k Y1, $57k Y2) under new_install deployment. Flagged assumptions: hosting_architecture=new_installation=new_install user‑unknown; integration cost scaling lacks validation. Confidence: 60.
+
+Technology impact: Anchored on build cost ($380k real) and modeled inference ($15.6k Y1) vs claimed $12k budget. Flagged assumptions: inference budget implies 3.2% recurring ratio vs 15–25% benchmark; model update cost trajectory unverified. Confidence: 55.
+
+Overall confidence low (≈55) — three core inputs flagged as fabricated or unrealistic and payback fails benchmark sanity check.
+
+---
+
+## Recommendation
+
+Scenario A (Retrofit) dominates Scenario B (New Install) on both primary metrics at identical confidence: A delivers a likely ROI of 2.583 versus B's 2.087, while costing $189,704 less ($1,181,413 vs $1,371,117) over three years. Both branches carry 4 flagged assumptions of equivalent severity — including the same fabricated 35% maintenance savings claim and the same unrealistically low $12,000 inference budget — meaning the higher-ROI branch does not carry proportionally more risk. The overall confidence for both branches is 55%, providing no statistical basis to prefer B's lower return. Scenario A's payback of 3.8 months is also slightly faster than B's 4.0 months. Recommendation is qualified by the shared 55% overall confidence across both branches, which reflects that all 4 flagged assumptions remain unvalidated in each scenario.
+
+---
+*All projections use company-provided inputs where available. Flagged assumptions are based on curated industry benchmarks (McKinsey, HTEC, Deloitte, NVIDIA State of AI). This memo is not financial advice.*

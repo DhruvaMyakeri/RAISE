@@ -1,0 +1,100 @@
+{
+  "category": "Customer Support AI",
+  "honesty_note": "Curated published survey figures, paraphrased for citation — not an independent primary dataset.",
+  "facts": [
+    {
+      "id": "mckinsey_roi_multiple",
+      "claim": "Organizations that put AI into production report an average ROI multiple of about 5.8x within roughly 14 months of go-live.",
+      "metric": "avg_roi_multiple",
+      "value": 5.8,
+      "unit": "x",
+      "time_horizon_months": 14,
+      "source": "McKinsey Global AI Survey",
+      "source_year": null,
+      "applies_to": ["Customer Support AI", "Marketing AI", "Predictive Maintenance AI"]
+    },
+    {
+      "id": "nvidia_sector_adoption",
+      "claim": "Industry adoption and realized ROI for AI vary by sector; retail and consumer-facing operations are active adopters but outcomes depend on use-case fit and operating model.",
+      "metric": "sector_adoption_context",
+      "value": null,
+      "unit": null,
+      "source": "NVIDIA State of AI Report 2026",
+      "source_year": 2026,
+      "applies_to": ["Customer Support AI"]
+    },
+    {
+      "id": "deloitte_productivity_gains",
+      "claim": "About 66% of enterprises report productivity gains from AI initiatives.",
+      "metric": "pct_reporting_productivity_gains",
+      "value": 0.66,
+      "unit": "fraction",
+      "source": "Deloitte State of AI in the Enterprise",
+      "source_year": null,
+      "applies_to": ["Customer Support AI", "Marketing AI", "Predictive Maintenance AI"]
+    },
+    {
+      "id": "deloitte_revenue_aspiration_gap",
+      "claim": "Revenue growth from AI remains aspirational for most firms: roughly 74% hope for revenue impact while only about 20% report achieving it.",
+      "metric": "revenue_hope_vs_achieve",
+      "value": {"hoping": 0.74, "achieving": 0.2},
+      "unit": "fraction",
+      "source": "Deloitte State of AI in the Enterprise",
+      "source_year": null,
+      "applies_to": ["Customer Support AI", "Marketing AI"]
+    },
+    {
+      "id": "sector_payback_finance",
+      "claim": "Typical payback for agentic AI systems in finance is on the order of 8 months.",
+      "metric": "payback_months",
+      "value": 8,
+      "unit": "months",
+      "sector": "finance",
+      "source": "Sector payback timelines (published industry surveys)",
+      "source_year": null,
+      "applies_to": ["Customer Support AI"]
+    },
+    {
+      "id": "sector_payback_manufacturing",
+      "claim": "Typical payback for agentic AI systems in manufacturing is on the order of 12–14 months.",
+      "metric": "payback_months_range",
+      "value": {"min": 12, "max": 14},
+      "unit": "months",
+      "sector": "manufacturing",
+      "source": "Sector payback timelines (published industry surveys)",
+      "source_year": null,
+      "applies_to": ["Predictive Maintenance AI"]
+    },
+    {
+      "id": "cs_tier1_deflection",
+      "claim": "Customer-service chatbots commonly resolve about 68% of Tier-1 tickets when scoped to routine intents.",
+      "metric": "tier1_deflection_rate_typical",
+      "value": 0.68,
+      "unit": "fraction",
+      "range_typical": {"min": 0.2, "max": 0.35, "note": "Overall ticket deflection for mid-size support orgs is often lower than Tier-1-only rates; 20–35% overall is a common sanity band when Tier-1 is only a share of volume."},
+      "source": "Customer service chatbot resolution benchmarks (published industry figures)",
+      "source_year": null,
+      "applies_to": ["Customer Support AI"]
+    },
+    {
+      "id": "htec_true_op_cost",
+      "claim": "True operating cost of an AI system is often 3–5x the initial build estimate once inference at scale, integration, and model-update cycles are included.",
+      "metric": "true_op_cost_multiple_of_build",
+      "value": {"min": 3, "max": 5},
+      "unit": "x",
+      "source": "HTEC AI cost / ROI framework",
+      "source_year": null,
+      "applies_to": ["Customer Support AI", "Marketing AI", "Predictive Maintenance AI"]
+    },
+    {
+      "id": "htec_roi_formula",
+      "claim": "ROI = (Total Business Value − Total Cost) / Total Cost, where Total Cost includes build, inference at scale, integration, and model-update cycles. Integration and model-update costs scale non-linearly in year 2+ rather than staying flat.",
+      "metric": "roi_formula",
+      "value": "(TBV - TC) / TC",
+      "unit": null,
+      "source": "HTEC AI cost / ROI framework",
+      "source_year": null,
+      "applies_to": ["Customer Support AI", "Marketing AI", "Predictive Maintenance AI"]
+    }
+  ]
+}

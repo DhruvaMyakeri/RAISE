@@ -1,0 +1,116 @@
+{
+  "category": "Predictive Maintenance AI",
+  "honesty_note": "Curated published survey figures, paraphrased for citation — not an independent primary dataset. All citation_types are secondary (no original primary research conducted).",
+  "facts": [
+    {
+      "id": "enterprise_downtime_cost_reduction",
+      "claim": "Deploying machine learning models to identify industrial wear patterns drives substantial declines in unexpected equipment failures and standard maintenance spending.",
+      "metric": "downtime_and_cost_reduction",
+      "value": {"downtime_reduction": {"min": 0.30, "max": 0.50}, "maintenance_cost_savings": {"min": 0.18, "max": 0.25}},
+      "unit": "fraction",
+      "source": "McKinsey / Persistence Market Research",
+      "source_year": null,
+      "applies_to": ["Predictive Maintenance AI"],
+      "usage_note": "Treat this as an optimistic upper-bound threshold suitable only for highly optimized enterprise-level physical environments."
+    },
+    {
+      "id": "mid_market_savings_reality",
+      "claim": "Independent research shows that realistic facility-wide maintenance budget reductions are lower than single-asset case studies suggest.",
+      "metric": "mid_market_spend_reduction",
+      "value": {"min": 0.08, "max": 0.12},
+      "unit": "fraction",
+      "source": "Persistence Market Research",
+      "source_year": null,
+      "applies_to": ["Predictive Maintenance AI"],
+      "usage_note": "Use this realistic percentage as the standard baseline for average mid-market manufacturing financial projections."
+    },
+    {
+      "id": "adopter_payback_distribution",
+      "claim": "While the vast majority of industrial organizations report positive outcomes from predictive infrastructure, roughly one-quarter achieve a full return on capital within the initial year.",
+      "metric": "payback_distribution",
+      "value": {"positive_roi_share": 0.95, "sub_12mo_payback_share": 0.27},
+      "unit": "fraction",
+      "source": "IoT Analytics",
+      "source_year": null,
+      "applies_to": ["Predictive Maintenance AI"],
+      "usage_note": "Apply this distribution data to counter aggressive financial claims that promise an instantaneous first-year return."
+    },
+    {
+      "id": "average_cross_facility_payback",
+      "claim": "Complex multi-asset factory rollouts usually require a multi-year horizon to completely recover installation and integration expenses.",
+      "metric": "payback_months_range",
+      "value": {"min": 12, "max": 24},
+      "unit": "months",
+      "source": "IoT Analytics",
+      "source_year": null,
+      "applies_to": ["Predictive Maintenance AI"],
+      "usage_note": "Utilize this multi-year timeline to model realistic corporate cash flows for industrial transformations."
+    },
+    {
+      "id": "macro_downtime_hourly_cost",
+      "claim": "The broad financial penalty associated with sudden factory line stoppages has escalated substantially due to rising operational complexities.",
+      "metric": "downtime_cost_per_hour",
+      "value": 260000,
+      "unit": "usd_per_hour",
+      "source": "Aberdeen Group / Siemens",
+      "source_year": null,
+      "applies_to": ["Predictive Maintenance AI"],
+      "usage_note": "Avoid using this macro average blindly, as heavy sectors skew the data significantly compared to standard plants."
+    },
+    {
+      "id": "mid_market_downtime_cost",
+      "claim": "The hourly financial losses stemming from unplanned machine stoppages at mid-market and consumer processing facilities scale lower than heavy industrial operations.",
+      "metric": "downtime_cost_per_hour_midmarket",
+      "value": {"min": 10000, "max": 50000},
+      "unit": "usd_per_hour",
+      "source": "Aberdeen Group / Siemens",
+      "source_year": null,
+      "applies_to": ["Predictive Maintenance AI"],
+      "usage_note": "Enforce this lower range as the standard baseline valuation for mid-sized factory downtime models."
+    },
+    {
+      "id": "mid_market_implementation_tco",
+      "claim": "Instrumenting standard asset groups inside a single plant incurs defined integration fees alongside predictable annual subscription and management overhead.",
+      "metric": "implementation_cost_range",
+      "value": {"initial_build": {"min": 50000, "max": 120000}, "annual_recurring_pct_of_build": {"min": 0.15, "max": 0.25}},
+      "unit": "usd and fraction",
+      "source": "Ditstek Innovations / Factory AI",
+      "source_year": null,
+      "applies_to": ["Predictive Maintenance AI"],
+      "usage_note": "Ensure financial models factor in these recurring operational expenses to prevent artificial inflation of net margins."
+    },
+    {
+      "id": "proactive_repair_cost_ratio",
+      "claim": "Repairing a mechanical failure before catastrophic component breakage occurs is structurally more cost-effective than executing emergency reactive overhauls.",
+      "metric": "proactive_vs_reactive_cost_ratio",
+      "value": {"min": 4, "max": 5},
+      "unit": "x",
+      "source": "Standard Industrial Accounting Framework",
+      "source_year": null,
+      "applies_to": ["Predictive Maintenance AI"],
+      "usage_note": "Apply this standard structural ratio as the mathematical foundation for analyzing avoided-cost savings formulas."
+    },
+    {
+      "id": "mid_market_realistic_target_range",
+      "claim": "Typical mid-market industrial outcomes yield standard drops in overall facility spending alongside targeted efficiency improvements on monitored assets.",
+      "metric": "realistic_mid_market_outcomes",
+      "value": {"total_spend_reduction": {"min": 0.11, "max": 0.18}, "critical_asset_downtime_reduction": {"min": 0.30, "max": 0.40}},
+      "unit": "fraction",
+      "source": "Cross-Source Industrial Consensus",
+      "source_year": null,
+      "applies_to": ["Predictive Maintenance AI"],
+      "usage_note": "Deploy this realistic parameter set as the objective baseline to review and evaluate standard manufacturing plans."
+    },
+    {
+      "id": "vendor_roi_hype_omissions",
+      "claim": "Aggressive vendor marketing metrics rely on narrow, ideal-condition case studies while leaving out essential infrastructure costs like sensor deployment, recurring fees, and continuous calibration.",
+      "metric": "vendor_claim_exaggeration",
+      "value": "10x+",
+      "unit": "x (vendor-claimed)",
+      "source": "Cross-Source Industrial Consensus",
+      "source_year": null,
+      "applies_to": ["Predictive Maintenance AI"],
+      "usage_note": "Use to flag claims that reflect vendor marketing pitches rather than typical mid-market manufacturing outcomes."
+    }
+  ]
+}

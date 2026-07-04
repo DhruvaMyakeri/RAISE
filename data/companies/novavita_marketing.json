@@ -1,0 +1,37 @@
+{
+  "company_id": "novavita-dtc-marketing",
+  "company_name": "Novavita Health Tech",
+  "industry": "direct-to-consumer telehealth and supplements",
+  "size": "mid-market",
+  "employees_total": 180,
+  "annual_revenue_usd": 45000000,
+  "project_category": "Marketing AI",
+  "project_description": "Integration of a dynamic creative optimization platform to personalize digital ad variants based on real-time user demographic and browsing behavior data.",
+  "current_operations": {
+    "monthly_ad_spend_usd": 150000,
+    "annual_ad_spend_usd": 1800000,
+    "current_conversion_rate": 0.021,
+    "current_customer_acquisition_cost_usd": 85,
+    "marketing_team_headcount": 14,
+    "average_order_value_usd": 120,
+    "channels": ["paid_social", "search", "display", "email"]
+  },
+  "proposed_project": {
+    "name": "Novavita Dynamic Creative",
+    "initial_build_cost_usd": 180000,
+    "claimed_conversion_lift_rate": 0.45,
+    "expected_go_live_months": 2,
+    "annual_inference_budget_usd_claimed": 8400
+  },
+  "unknown_fields": {
+    "data_enrichment_strategy": "unknown"
+  },
+  "notes": "Data enrichment strategy (first-party only vs third-party vendors) is not decided. This affects privacy compliance costs and recurring licensing fees. The claimed 45% conversion lift is fabricated — intentionally exceeds the industry-validated benchmark ceiling of 32% (and the realistic 20-25% range for SaaS-only adoption without deep workflow restructuring) to trigger the pushback path.",
+  "_test_notes": {
+    "optimistic_claim_field": "claimed_conversion_lift_rate",
+    "optimistic_claim_value": 0.45,
+    "why_should_trigger_pushback": "45% conversion lift vastly exceeds the benchmark ceiling of 32% (integrated_workflow_performance). For SaaS-only adoption without deep workflow restructuring, realistic range is 20-25%.",
+    "unknown_trigger_field": "data_enrichment_strategy",
+    "modeling_tool_field_mapping_notes": "Marketing AI value calculation will need: annual_ad_spend_usd, current_conversion_rate, claimed_conversion_lift_rate, average_order_value_usd, initial_build_cost_usd, annual_inference_budget_usd_claimed. The annual_inference_budget_usd_claimed ($8,400 = $700/mo) was fabricated as intentionally low relative to build cost to test HTEC pushback, matching the pattern in meridian_support.json."
+  }
+}

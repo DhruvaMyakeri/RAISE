@@ -1,0 +1,64 @@
+[
+  {
+    "category": "Marketing AI",
+    "company_name": "Novavita Health Tech",
+    "industry": "Direct-to-Consumer Telehealth and Supplements",
+    "size": {
+      "annual_revenue_usd": 45000000,
+      "employee_count": 180
+    },
+    "baseline_metrics": {
+      "monthly_ad_spend_usd": 150000,
+      "current_conversion_rate_percentage": 2.1,
+      "current_customer_acquisition_cost_usd": 85,
+      "marketing_team_headcount": 14,
+      "average_order_value_usd": 120
+    },
+    "proposed_project": {
+      "focus_area": "ad_personalization",
+      "description": "Integration of a dynamic creative optimization platform to personalize digital ad variants based on real-time user demographic and browsing behavior data.",
+      "estimated_implementation_cost_usd": 35000
+    },
+    "intentionally_optimistic_claim": {
+      "field": "expected_conversion_lift_percentage",
+      "value": "45.0",
+      "why_unrealistic": "A 45% conversion rate lift vastly exceeds the industry-validated benchmark ceiling of 32%. For an organization simply adopting an out-of-the-box SaaS tool without complete deep workflow restructuring, layering AI over legacy data typically yields a maximum improvement of 20% to 25%."
+    },
+    "intentionally_unknown_field": {
+      "field": "data_enrichment_strategy",
+      "value": "unknown",
+      "why_plausible": "The company has not yet determined whether the targeting models will rely strictly on their internal first-party customer data or if they will integrate third-party data enrichment vendors, which introduces complex compliance considerations under modern privacy regulations and significantly impacts recurring software licensing costs."
+    }
+  },
+  {
+    "category": "Predictive Maintenance AI",
+    "company_name": "Apex Precision Components",
+    "industry": "Mid-Market Industrial Valve Manufacturing",
+    "size": {
+      "annual_revenue_usd": 85000000,
+      "employee_count": 420,
+      "production_facilities_count": 2
+    },
+    "baseline_metrics": {
+      "critical_assets_count": 65,
+      "annual_unplanned_downtime_hours": 140,
+      "cost_per_downtime_hour_usd": 22000,
+      "current_annual_maintenance_spend_usd": 1850000
+    },
+    "proposed_project": {
+      "focus_area": "critical_asset_monitoring",
+      "description": "Deployment of continuous acoustic emission and vibration sensors across milling machines and CNC units tied to a centralized predictive anomaly detection engine.",
+      "estimated_implementation_cost_usd": 85000
+    },
+    "intentionally_optimistic_claim": {
+      "field": "expected_total_facility_maintenance_spend_reduction_percentage",
+      "value": "35.0",
+      "why_unrealistic": "An absolute 35% reduction in total facility maintenance spend mirrors aggressive vendor marketing case studies based on highly isolated, single-asset pilot success stories. Independent macro-analyses of realistic mid-market factory rollouts establish a much lower baseline savings threshold of 11% to 18% due to recurring maintenance costs, continuous model calibration needs, and fixed hardware overhead."
+    },
+    "intentionally_unknown_field": {
+      "field": "hardware_deployment_method",
+      "value": "unknown",
+      "why_plausible": "The engineering team has not finalized whether they can retrofit the existing legacy asset telemetry boards with external bolt-on sensor modules or if they must completely source and install specialized, native smart-sensor nodes, leaving the final hardware cost profile an open question."
+    }
+  }
+]

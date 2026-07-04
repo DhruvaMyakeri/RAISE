@@ -1,0 +1,31 @@
+{
+  "company_id": "meridian-retail-support",
+  "company_name": "Meridian Retail Co.",
+  "industry": "multi-channel retail",
+  "size": "mid-market",
+  "employees_total": 2400,
+  "project_category": "Customer Support AI",
+  "project_description": "Deploy an AI Tier-1 support assistant to deflect routine tickets (order status, returns eligibility, password resets) before they reach human agents.",
+  "current_operations": {
+    "annual_ticket_volume": 480000,
+    "monthly_ticket_volume": 40000,
+    "cost_per_ticket_usd": 12.0,
+    "support_headcount_fte": 72,
+    "fully_loaded_cost_per_fte_usd": 72000,
+    "tier1_ticket_share": 0.6,
+    "avg_handle_time_minutes": 8.5,
+    "channels": ["email", "chat", "phone"]
+  },
+  "proposed_project": {
+    "name": "Meridian Assist",
+    "initial_build_cost_usd": 380000,
+    "claimed_deflection_rate_all_tickets": 0.5,
+    "claimed_tier1_deflection_rate": 0.5,
+    "expected_go_live_months": 4,
+    "annual_inference_budget_usd_claimed": 48000
+  },
+  "unknown_fields": {
+    "hosting_architecture": "unknown"
+  },
+  "notes": "Hosting architecture (on-prem vs cloud) is not decided. Finance has not approved either path."
+}

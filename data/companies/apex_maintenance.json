@@ -1,0 +1,36 @@
+{
+  "company_id": "apex-valve-maintenance",
+  "company_name": "Apex Precision Components",
+  "industry": "mid-market industrial valve manufacturing",
+  "size": "mid-market",
+  "employees_total": 420,
+  "annual_revenue_usd": 85000000,
+  "production_facilities_count": 2,
+  "project_category": "Predictive Maintenance AI",
+  "project_description": "Deployment of continuous acoustic emission and vibration sensors across milling machines and CNC units tied to a centralized predictive anomaly detection engine.",
+  "current_operations": {
+    "critical_assets_count": 65,
+    "annual_unplanned_downtime_hours": 140,
+    "cost_per_downtime_hour_usd": 22000,
+    "current_annual_maintenance_spend_usd": 1850000,
+    "annual_downtime_cost_usd": 3080000
+  },
+  "proposed_project": {
+    "name": "Apex PredictGuard",
+    "initial_build_cost_usd": 380000,
+    "claimed_maintenance_spend_reduction_rate": 0.35,
+    "expected_go_live_months": 4,
+    "annual_inference_budget_usd_claimed": 12000
+  },
+  "unknown_fields": {
+    "hardware_deployment_method": "unknown"
+  },
+  "notes": "Hardware deployment method (retrofit bolt-on sensors vs native smart-sensor nodes) is not decided. This affects final hardware cost profile and integration complexity. The claimed 35% facility maintenance spend reduction is fabricated — intentionally exceeds the independent mid-market baseline of 11-18% (mid_market_savings_reality, mid_market_realistic_target_range) to trigger the pushback path.",
+  "_test_notes": {
+    "optimistic_claim_field": "claimed_maintenance_spend_reduction_rate",
+    "optimistic_claim_value": 0.35,
+    "why_should_trigger_pushback": "35% total facility maintenance spend reduction mirrors aggressive vendor case studies. Independent mid-market analyses establish a realistic baseline of 11-18% (mid_market_savings_reality, mid_market_realistic_target_range).",
+    "unknown_trigger_field": "hardware_deployment_method",
+    "modeling_tool_field_mapping_notes": "Predictive Maintenance AI value calculation will need: current_annual_maintenance_spend_usd, annual_unplanned_downtime_hours, cost_per_downtime_hour_usd, claimed_maintenance_spend_reduction_rate, critical_assets_count, initial_build_cost_usd, annual_inference_budget_usd_claimed. The annual_inference_budget_usd_claimed ($12,000 = $1,000/mo) was fabricated as intentionally low relative to build cost to test HTEC pushback. annual_downtime_cost_usd ($3,080,000 = 140 hrs * $22,000) is pre-computed for convenience."
+  }
+}

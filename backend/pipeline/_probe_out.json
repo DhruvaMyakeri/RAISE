@@ -1,0 +1,47 @@
+{
+  "id": "chatcmpl-ba288340-6151-43a5-be9c-bc27e0b0ea43",
+  "choices": [
+    {
+      "finish_reason": "tool_calls",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": [
+          {
+            "id": "chatcmpl-tool-5545242cf4b33f20",
+            "function": {
+              "arguments": "{\"category\": \"Customer Support AI\", \"roi_dimensions\": [\"Cost impact\"], \"missing_fields\": [\"hosting_architecture\"], \"clarifying_question\": \"On-prem or cloud?\", \"question_field\": \"hosting_architecture\"}",
+              "name": "emit_plan"
+            },
+            "type": "function"
+          }
+        ],
+        "reasoning": " The user wants me to call the `emit_plan` function with specific parameters:\n- category: \"Customer Support AI\"\n- roi_dimensions: [\"Cost impact\"]\n- missing_fields: [\"hosting_architecture\"]\n- clarifying_question: \"On-prem or cloud?\"\n- question_field: \"hosting_architecture\"\n\nI need to make sure I pass these parameters correctly to the function. Let me verify the schema:\n- category: string (required)\n- clarifying_question: string (required)\n- missing_fields: array of strings (required)\n- question_field: string (required)\n- roi_dimensions: array of strings (required)\n\nAll parameters are provided and match the expected types. I should call the function now. "
+      },
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "created": 1783166561,
+  "model": "moonshotai/Kimi-K2.6",
+  "object": "chat.completion",
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.23.1rc1.dev448+ge53a17232.vultr.cuda-tp4-ep-4c9723c4",
+  "usage": {
+    "completion_tokens": 204,
+    "prompt_tokens": 168,
+    "total_tokens": 372,
+    "completion_tokens_details": null,
+    "prompt_tokens_details": null
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null
+}
