@@ -1,4 +1,4 @@
-   # RAISE — System Architecture (as implemented)
+   # Vantage — System Architecture (as implemented)
 
    > **Last updated:** 2026-07-04
    > **Scope:** Customer Support AI vertical slice only.
