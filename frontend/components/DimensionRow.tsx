@@ -28,7 +28,7 @@ export function DimensionRow({
           <span className="dim-fill" style={{ width: `${width}%`, background: color }} />
         </span>
         <span className="dim-score" style={{ color }}>
-          {dim.confidence == null ? "—" : dim.confidence}
+          {dim.confidence == null ? "N/A" : dim.confidence}
         </span>
         <span className="dim-chev">
           <IconArrow width={14} height={14} />

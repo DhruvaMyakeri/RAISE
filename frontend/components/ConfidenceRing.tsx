@@ -23,7 +23,7 @@ export function ConfidenceRing({ value }: { value: number | null }) {
         />
       </svg>
       <div className="val" style={{ color }}>
-        {value == null ? "—" : value}
+        {value == null ? "N/A" : value}
         <small>/100</small>
       </div>
     </div>

@@ -43,7 +43,7 @@ export function EarlyAccess() {
         <div className="ea-done">
           <IconCheck />
           {state.kind === "registered"
-            ? "Thanks — we'll be in touch."
+            ? "Thanks, we'll be in touch."
             : "You're already on the list."}
         </div>
       ) : (

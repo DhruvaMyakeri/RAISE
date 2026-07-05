@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Vantage — Grounded AI ROI Intelligence",
+  title: "Vantage: Grounded AI ROI Intelligence",
   description:
     "A multi-agent system that predicts and explains AI project ROI, grounded in company data and cited industry benchmarks.",
 };

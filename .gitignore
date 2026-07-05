@@ -46,3 +46,6 @@ Thumbs.db
 .cache/
 tmp/
 temp/
+
+# Early-access signups (captured user data — do not commit)
+data/early_access_signups.jsonl

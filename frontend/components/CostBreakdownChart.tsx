@@ -14,9 +14,9 @@ import { fmtUsd } from "@/lib/format";
 
 const SEGMENTS = [
   { key: "Build", field: "build_usd", color: "#e8b04b" },
-  { key: "Inference", field: "inference_y1_usd", color: "#6ba3e5" },
-  { key: "Integration", field: "integration_y1_usd", color: "#c78bf0" },
-  { key: "Model update", field: "model_update_y1_usd", color: "#5cd08c" },
+  { key: "Inference", field: "inference_y1_usd", color: "#0ABAB5" },
+  { key: "Integration", field: "integration_y1_usd", color: "#7c3ec2" },
+  { key: "Model update", field: "model_update_y1_usd", color: "#0c8a52" },
 ] as const;
 
 function CustomTooltip({ active, payload }: any) {
@@ -60,19 +60,19 @@ export function CostBreakdownChart({ branches }: { branches: MemoBranch[] }) {
           <XAxis
             type="number"
             tickFormatter={(v) => fmtUsd(v)}
-            tick={{ fill: "#616b7a", fontSize: 11, fontFamily: "var(--font-mono)" }}
-            axisLine={{ stroke: "#242a34" }}
+            tick={{ fill: "#8a8a8a", fontSize: 11, fontFamily: "var(--font-mono)" }}
+            axisLine={{ stroke: "rgba(26,26,26,0.16)" }}
             tickLine={false}
           />
           <YAxis
             type="category"
             dataKey="branch"
-            tick={{ fill: "#e9edf3", fontSize: 13, fontWeight: 600 }}
+            tick={{ fill: "#1a1a1a", fontSize: 13, fontWeight: 600 }}
             axisLine={false}
             tickLine={false}
             width={82}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(26,26,26,0.04)" }} />
           {SEGMENTS.map((s) => (
             <Bar key={s.key} dataKey={s.key} stackId="cost" radius={[0, 0, 0, 0]}>
               {data.map((_, idx) => (

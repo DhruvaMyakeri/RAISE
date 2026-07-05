@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 import queue
+import re
 import sys
 import threading
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -42,6 +44,36 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# --- Early-access email capture (simple flat-file store, no external service) ---
+DATA_DIR = BACKEND.parent / "data"
+EARLY_ACCESS_FILE = DATA_DIR / "early_access_signups.jsonl"
+_EARLY_ACCESS_LOCK = threading.Lock()
+_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+class EarlyAccessRequest(BaseModel):
+    email: str = Field(..., description="Email address to register for early access")
+
+
+def _existing_signup_emails() -> set[str]:
+    if not EARLY_ACCESS_FILE.exists():
+        return set()
+    emails: set[str] = set()
+    with EARLY_ACCESS_FILE.open(encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            email = str(rec.get("email", "")).strip().lower()
+            if email:
+                emails.add(email)
+    return emails
 
 
 class RunRequest(BaseModel):
@@ -154,6 +186,27 @@ def get_run_stream(
             "X-Accel-Buffering": "no",
         },
     )
+
+
+@app.post("/api/early-access")
+def post_early_access(body: EarlyAccessRequest) -> dict[str, str]:
+    """Register an email for early access (append-only JSONL, dedupe by email)."""
+    email = body.email.strip()
+    if not _EMAIL_RE.match(email):
+        raise HTTPException(status_code=400, detail="Please enter a valid email address.")
+
+    normalized = email.lower()
+    with _EARLY_ACCESS_LOCK:
+        if normalized in _existing_signup_emails():
+            return {"status": "already_registered", "email": email}
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        record = {
+            "email": email,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+        with EARLY_ACCESS_FILE.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(record) + "\n")
+    return {"status": "registered", "email": email}
 
 
 @app.get("/health")

@@ -19,7 +19,7 @@ export function ConfidencePanel({
     <div className={`conf-panel ${tag === "B" ? "b" : ""}`}>
       <div className="conf-head">
         <span className="tag">{tag}</span>
-        <span className="name">{branch.branch_label || branch.label}</span>
+        <span className="name">{(branch.branch_label || branch.label || "").replace(/^Scenario [AB]\s*—\s*/, "")}</span>
         <ConfidenceRing value={branch.explainability.overall_confidence} />
       </div>
 

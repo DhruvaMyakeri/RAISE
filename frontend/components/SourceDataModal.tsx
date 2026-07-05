@@ -155,7 +155,7 @@ function ProfileTab({ profile }: { profile: CompanyProfile }) {
       <div className="src-banner fabricated">
         <IconFlag />
         <div>
-          <b>Fabricated demo data — not a real company.</b> Every figure below is
+          <b>Fabricated demo data, not a real company.</b> Every figure below is
           synthetic, built to exercise the pipeline. Consistent with the memo
           footer: outputs are grounded projections, not financial advice.
         </div>
@@ -204,7 +204,7 @@ function ProfileTab({ profile }: { profile: CompanyProfile }) {
       {unknownField && profile.unknown_fields ? (
         <div className="src-callout unknown">
           <div className="src-callout-head">
-            <span className="pill unknown">Unresolved — triggers branching</span>
+            <span className="pill unknown">Unresolved, triggers branching</span>
             <code>{unknownField}</code>
           </div>
           <div className="src-callout-body">

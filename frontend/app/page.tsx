@@ -78,7 +78,7 @@ export default function Page() {
             </h1>
             <p>
               Vantage runs a multi-agent pipeline over a company&apos;s real operating
-              data and a corpus of cited industry benchmarks — validating each claim,
+              data and a corpus of cited industry benchmarks, validating each claim,
               modeling ROI deterministically, and flagging exactly which assumptions
               don&apos;t hold up. Pick a company and watch the agents work in real time.
             </p>

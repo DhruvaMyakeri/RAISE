@@ -6,45 +6,50 @@
    semantic colors for verdicts / data provenance.
    ============================================================ */
 :root {
-  --bg: #08090b;
-  --bg-grid: rgba(255, 255, 255, 0.018);
-  --surface: #101318;
-  --surface-2: #161a21;
-  --surface-3: #1c212a;
-  --border: #242a34;
-  --border-strong: #333b48;
+  /* Light "interior design" theme: primary = pale Tiffany-blue page,
+     secondary = white panels, warm brass accents, natural-light softness. */
+  --bg: #a5e1db;
+  --bg-grid: rgba(26, 26, 26, 0.02);
+  --surface: #ffffff;
+  --surface-2: #f1f9f8;
+  --surface-3: #e8f4f3;
+  --border: rgba(26, 26, 26, 0.08);
+  --border-strong: rgba(26, 26, 26, 0.16);
 
-  --text: #e9edf3;
-  --text-dim: #99a2b1;
-  --text-faint: #616b7a;
+  --text: #1a1a1a;
+  --text-dim: #5a5a5a;
+  --text-faint: #8a8a8a;
 
   --brand: #e8b04b;
-  --brand-bright: #f6c661;
-  --brand-soft: rgba(232, 176, 75, 0.12);
-  --brand-line: rgba(232, 176, 75, 0.35);
+  --brand-bright: #f4c25c;      /* light gold — gradient highlights / dots */
+  --brand-ink: #8f6410;         /* dark gold — legible gold TEXT on light bg */
+  --brand-soft: rgba(232, 176, 75, 0.18);
+  --brand-line: rgba(232, 176, 75, 0.5);
 
-  /* verdicts */
-  --defensible: #5cd08c;
-  --defensible-soft: rgba(92, 208, 140, 0.13);
-  --flagged: #f0714a;
-  --flagged-soft: rgba(240, 113, 74, 0.13);
+  /* verdicts (darkened for legibility on the light background) */
+  --defensible: #0c8a52;
+  --defensible-soft: rgba(12, 138, 82, 0.14);
+  --flagged: #cf4a1e;
+  --flagged-soft: rgba(207, 74, 30, 0.12);
 
   /* data provenance / flag types */
-  --real: #6ba3e5;
-  --real-soft: rgba(107, 163, 229, 0.13);
-  --assumption: #f0714a;
-  --sanity: #c78bf0;
-  --sanity-soft: rgba(199, 139, 240, 0.14);
-  --neutral: #7f8a99;
-  --neutral-soft: rgba(127, 138, 153, 0.13);
+  --real: #0ABAB5;              /* Tiffany blue — verified / real company data */
+  --real-soft: rgba(10, 186, 181, 0.14);
+  --assumption: #cf4a1e;
+  --sanity: #7c3ec2;
+  --sanity-soft: rgba(124, 62, 194, 0.13);
+  --neutral: #6f6f6f;
+  --neutral-soft: rgba(110, 110, 110, 0.12);
+  --branch-b: #7a7a7a;          /* muted grey — Branch B (understated vs gold A) */
+  --branch-b-soft: rgba(122, 122, 122, 0.16);
 
   --radius: 14px;
   --radius-sm: 9px;
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', Consolas, monospace;
 
-  --shadow: 0 18px 50px -22px rgba(0, 0, 0, 0.85);
-  --shadow-lg: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
+  --shadow: 0 16px 40px -24px rgba(120, 108, 84, 0.35);
+  --shadow-lg: 0 36px 80px -34px rgba(120, 108, 84, 0.42);
 }
 
 * {
@@ -67,14 +72,14 @@ body {
   background-image:
     linear-gradient(var(--bg-grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px),
-    radial-gradient(1100px 620px at 78% -8%, rgba(232, 176, 75, 0.07), transparent 60%),
-    radial-gradient(900px 560px at 8% 4%, rgba(107, 163, 229, 0.05), transparent 55%);
+    radial-gradient(1100px 620px at 78% -8%, rgba(232, 176, 75, 0.12), transparent 60%),
+    radial-gradient(900px 560px at 8% 4%, rgba(255, 255, 255, 0.5), transparent 55%);
   background-size: 46px 46px, 46px 46px, 100% 100%, 100% 100%;
 }
 
 ::selection {
   background: var(--brand-soft);
-  color: var(--brand-bright);
+  color: var(--brand-ink);
 }
 
 a {
@@ -101,7 +106,7 @@ button {
   border: 3px solid var(--bg);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #47505e;
+  background: rgba(26, 26, 26, 0.32);
 }
 
 /* ============================================================
@@ -133,7 +138,7 @@ button {
   top: 0;
   z-index: 40;
   backdrop-filter: blur(14px);
-  background: linear-gradient(180deg, rgba(8, 9, 11, 0.92), rgba(8, 9, 11, 0.6));
+  background: linear-gradient(180deg, rgba(165, 225, 219, 0.92), rgba(165, 225, 219, 0.62));
   border-bottom: 1px solid var(--border);
 }
 .topbar-inner {
@@ -155,9 +160,9 @@ button {
   border-radius: 9px;
   display: grid;
   place-items: center;
-  background: radial-gradient(120% 120% at 30% 20%, #2a2b30, #131418);
+  background: radial-gradient(120% 120% at 30% 20%, #ffffff, #d3edeb);
   border: 1px solid var(--border-strong);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 .brand-mark span {
   width: 13px;
@@ -210,7 +215,7 @@ button {
   max-width: 15ch;
 }
 .hero h1 .accent {
-  background: linear-gradient(120deg, var(--brand-bright), #d99b34);
+  background: linear-gradient(120deg, #b8862a, #7d5409);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -241,7 +246,7 @@ button {
   gap: 7px;
 }
 .chip b {
-  color: var(--brand);
+  color: var(--brand-ink);
   font-weight: 600;
 }
 
@@ -263,7 +268,7 @@ button {
 .section-head .step {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--brand);
+  color: var(--brand-ink);
 }
 
 /* ============================================================
@@ -312,7 +317,7 @@ button {
   font-size: 10.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--brand);
+  color: var(--brand-ink);
   margin-bottom: 14px;
   display: flex;
   align-items: center;
@@ -340,7 +345,7 @@ button {
   color: var(--text-faint);
 }
 .company-card.selected .pick {
-  color: var(--brand);
+  color: var(--brand-ink);
 }
 .tick {
   width: 16px;
@@ -459,13 +464,13 @@ button {
   color: var(--text-dim);
 }
 .stage.running .stage-icon {
-  color: var(--brand);
+  color: var(--brand-ink);
   border-color: var(--brand-line);
   background: var(--brand-soft);
 }
 .stage.complete .stage-icon {
   color: var(--defensible);
-  border-color: rgba(92, 208, 140, 0.3);
+  border-color: rgba(12, 138, 82, 0.3);
   background: var(--defensible-soft);
 }
 .stage-title {
@@ -509,7 +514,7 @@ button {
   background: var(--neutral-soft);
 }
 .stage-status.running {
-  color: var(--brand);
+  color: var(--brand-ink);
   background: var(--brand-soft);
 }
 .stage-status.complete {
@@ -577,11 +582,11 @@ button {
   animation: slideIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .claim.flagged {
-  border-color: rgba(240, 113, 74, 0.32);
+  border-color: rgba(207, 74, 30, 0.32);
   background: linear-gradient(90deg, var(--flagged-soft), transparent 70%), var(--surface);
 }
 .claim.defensible {
-  border-color: rgba(92, 208, 140, 0.3);
+  border-color: rgba(12, 138, 82, 0.3);
   background: linear-gradient(90deg, var(--defensible-soft), transparent 70%), var(--surface);
 }
 .claim-badge {
@@ -673,7 +678,7 @@ button {
   color: var(--text-faint);
 }
 .scenario-chip.likely .lbl {
-  color: var(--brand);
+  color: var(--brand-ink);
 }
 .scenario-chip .roi {
   font-size: 24px;
@@ -733,7 +738,7 @@ button {
   gap: 9px;
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--brand);
+  color: var(--brand-ink);
   margin-bottom: 12px;
 }
 .rec-text {
@@ -856,7 +861,7 @@ button {
   display: grid;
   place-items: center;
   background: var(--brand-soft);
-  color: var(--brand);
+  color: var(--brand-ink);
   border: 1px solid var(--brand-line);
 }
 .rec-pick {
@@ -886,7 +891,7 @@ button {
 }
 .rec-hero .caveat svg {
   flex-shrink: 0;
-  color: var(--brand);
+  color: var(--brand-ink);
   margin-top: 1px;
 }
 
@@ -956,7 +961,7 @@ button {
   place-items: center;
 }
 .range-row.b .rtag {
-  background: var(--real);
+  background: var(--branch-b);
 }
 .range-row .rlikely {
   font-family: var(--font-mono);
@@ -964,11 +969,11 @@ button {
   color: var(--text);
 }
 .range-row .rlikely b {
-  color: var(--brand);
+  color: var(--brand-ink);
   font-weight: 700;
 }
 .range-row.b .rlikely b {
-  color: var(--real);
+  color: var(--branch-b);
 }
 .range-track {
   position: relative;
@@ -986,20 +991,20 @@ button {
   background: linear-gradient(90deg, rgba(232, 176, 75, 0.25), rgba(232, 176, 75, 0.6));
 }
 .range-row.b .range-band {
-  background: linear-gradient(90deg, rgba(107, 163, 229, 0.25), rgba(107, 163, 229, 0.6));
+  background: linear-gradient(90deg, rgba(122, 122, 122, 0.28), rgba(122, 122, 122, 0.55));
 }
 .range-marker {
   position: absolute;
   top: -3px;
   bottom: -3px;
   width: 3px;
-  background: var(--brand-bright);
-  box-shadow: 0 0 10px rgba(232, 176, 75, 0.8);
+  background: var(--brand);
+  box-shadow: 0 0 8px rgba(232, 176, 75, 0.55);
   border-radius: 2px;
 }
 .range-row.b .range-marker {
-  background: #9cc4f5;
-  box-shadow: 0 0 10px rgba(107, 163, 229, 0.8);
+  background: var(--branch-b);
+  box-shadow: 0 0 8px rgba(122, 122, 122, 0.5);
 }
 .range-scale {
   position: relative;
@@ -1119,7 +1124,7 @@ button {
   font-size: 9.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--brand);
+  color: var(--brand-ink);
   border: 1px solid var(--brand-line);
   background: var(--brand-soft);
   padding: 3px 8px;
@@ -1234,14 +1239,14 @@ button {
 }
 .view-source:hover {
   color: var(--real);
-  border-color: rgba(107, 163, 229, 0.4);
+  border-color: rgba(10, 186, 181, 0.4);
   background: var(--real-soft);
 }
 .view-source.strong {
   font-size: 12px;
   padding: 9px 14px;
   color: var(--real);
-  border-color: rgba(107, 163, 229, 0.35);
+  border-color: rgba(10, 186, 181, 0.35);
   background: var(--real-soft);
 }
 .view-source.strong:hover {
@@ -1271,7 +1276,7 @@ button {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(4, 5, 7, 0.72);
+  background: rgba(40, 38, 34, 0.42);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: flex-start;
@@ -1413,17 +1418,17 @@ button {
   color: var(--text);
 }
 .src-banner.fabricated {
-  border: 1px solid rgba(240, 113, 74, 0.28);
+  border: 1px solid rgba(207, 74, 30, 0.28);
   background: var(--flagged-soft);
-  color: #f0b8a3;
+  color: var(--flagged);
 }
 .src-banner.fabricated svg {
   color: var(--flagged);
 }
 .src-banner.real {
-  border: 1px solid rgba(107, 163, 229, 0.28);
+  border: 1px solid rgba(10, 186, 181, 0.3);
   background: var(--real-soft);
-  color: #a9c6ea;
+  color: #067f7b;
 }
 .src-banner.real svg {
   color: var(--real);
@@ -1472,7 +1477,7 @@ button {
   overflow: hidden;
 }
 .src-callout.claim {
-  border-color: rgba(240, 113, 74, 0.3);
+  border-color: rgba(207, 74, 30, 0.3);
 }
 .src-callout.unknown {
   border-color: rgba(232, 176, 75, 0.3);
@@ -1504,7 +1509,7 @@ button {
   background: var(--flagged-soft);
 }
 .pill.unknown {
-  color: var(--brand);
+  color: var(--brand-ink);
   background: var(--brand-soft);
 }
 .src-callout-body {
@@ -1519,7 +1524,7 @@ button {
 }
 .src-callout.unknown .claim-value,
 .claim-value.muted {
-  color: var(--brand);
+  color: var(--brand-ink);
 }
 .src-callout-body p {
   font-size: 12.5px;
@@ -1561,7 +1566,7 @@ button {
   background: var(--surface-2);
 }
 .src-field.hot {
-  border-color: rgba(240, 113, 74, 0.4);
+  border-color: rgba(207, 74, 30, 0.4);
   background: var(--flagged-soft);
 }
 .src-field .fk {
@@ -1572,7 +1577,7 @@ button {
   gap: 7px;
 }
 .src-field.hot .fk {
-  color: #f0b8a3;
+  color: var(--flagged);
 }
 .mini-flag {
   font-family: var(--font-mono);
@@ -1580,7 +1585,7 @@ button {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--flagged);
-  border: 1px solid rgba(240, 113, 74, 0.4);
+  border: 1px solid rgba(207, 74, 30, 0.4);
   padding: 1px 5px;
   border-radius: 4px;
 }
@@ -1624,7 +1629,7 @@ button {
 }
 .src-filter span {
   font-size: 12.5px;
-  color: var(--brand-bright);
+  color: var(--brand-ink);
   font-family: var(--font-mono);
 }
 .filter-toggle {
@@ -1677,8 +1682,8 @@ button {
   margin-bottom: 10px;
 }
 .fact-card.cited {
-  border-color: rgba(107, 163, 229, 0.45);
-  box-shadow: 0 0 0 1px rgba(107, 163, 229, 0.18);
+  border-color: rgba(10, 186, 181, 0.5);
+  box-shadow: 0 0 0 1px rgba(10, 186, 181, 0.2);
 }
 .fact-badges {
   display: flex;
@@ -1704,7 +1709,7 @@ button {
   background: var(--defensible-soft);
 }
 .badge.tier.t2 {
-  color: var(--brand);
+  color: var(--brand-ink);
   background: var(--brand-soft);
 }
 .badge.cite {
@@ -1748,7 +1753,7 @@ button {
 .fv-row b {
   font-family: var(--font-mono);
   font-size: 13px;
-  color: var(--brand-bright);
+  color: var(--brand-ink);
 }
 .fact-foot {
   margin-top: 10px;
@@ -1820,7 +1825,7 @@ button {
   background: var(--brand);
 }
 .conf-panel.b .conf-head .tag {
-  background: var(--real);
+  background: var(--branch-b);
 }
 .conf-head .name {
   font-size: 14.5px;
@@ -2052,12 +2057,12 @@ button {
 }
 .prov-chip.real {
   color: var(--real);
-  border-color: rgba(107, 163, 229, 0.3);
+  border-color: rgba(10, 186, 181, 0.3);
   background: var(--real-soft);
 }
 .prov-chip.claimed {
   color: var(--flagged);
-  border-color: rgba(240, 113, 74, 0.3);
+  border-color: rgba(207, 74, 30, 0.3);
   background: var(--flagged-soft);
 }
 .prov-chip b {
@@ -2065,10 +2070,10 @@ button {
   font-weight: 600;
 }
 .prov-chip.real b {
-  color: #b9d3f3;
+  color: #067f7b;
 }
 .prov-chip.claimed b {
-  color: #f6b39c;
+  color: var(--flagged);
 }
 .prov-dot {
   width: 6px;

@@ -35,9 +35,9 @@ export function sourceTier(source: string): 1 | 2 | 3 {
 }
 
 export const TIER_LEGEND: Record<1 | 2 | 3, string> = {
-  1: "Tier 1 — major analyst firms (McKinsey, Deloitte, Gartner, NVIDIA…)",
-  2: "Tier 2 — specialist market-research firms",
-  3: "Tier 3 — frameworks & cross-source consensus",
+  1: "Tier 1: major analyst firms (McKinsey, Deloitte, Gartner, NVIDIA…)",
+  2: "Tier 2: specialist market-research firms",
+  3: "Tier 3: frameworks & cross-source consensus",
 };
 
 // Every corpus file's honesty_note states these are paraphrased published
@@ -136,7 +136,7 @@ export function formatFactValue(
   value: unknown,
   unit?: string | null
 ): ValueRow[] {
-  if (value == null) return [{ text: "contextual — no single figure" }];
+  if (value == null) return [{ text: "contextual (no single figure)" }];
   if (typeof value !== "object") {
     return [{ text: fmtLeaf(value, unit) }];
   }
