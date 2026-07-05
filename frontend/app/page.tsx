@@ -8,6 +8,7 @@ import { CompanyPicker } from "@/components/CompanyPicker";
 import { AgentTrace } from "@/components/AgentTrace";
 import { MemoView } from "@/components/MemoView";
 import { SourceDataModal } from "@/components/SourceDataModal";
+import { EarlyAccess } from "@/components/EarlyAccess";
 import { IconArrow } from "@/components/icons";
 import type { Memo } from "@/lib/types";
 
@@ -131,6 +132,8 @@ export default function Page() {
               streams planner → retrieval → modeling → explainability → recommendation
             </span>
           </div>
+
+          <EarlyAccess />
         </>
       ) : (
         <>

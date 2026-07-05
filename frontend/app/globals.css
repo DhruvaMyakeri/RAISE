@@ -1094,6 +1094,125 @@ button {
 }
 
 /* ============================================================
+   Early-access email capture (landing strip)
+   ============================================================ */
+.early-access {
+  margin-top: 40px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.ea-copy {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ea-tag {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand);
+  border: 1px solid var(--brand-line);
+  background: var(--brand-soft);
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+.ea-line {
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+.ea-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ea-form input {
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  color: var(--text);
+  width: 220px;
+  transition: border-color 0.14s ease;
+}
+.ea-form input::placeholder {
+  color: var(--text-faint);
+}
+.ea-form input:focus {
+  outline: none;
+  border-color: var(--brand-line);
+}
+.ea-form input:disabled {
+  opacity: 0.6;
+}
+.ea-form button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+.ea-form button:hover:not(:disabled) {
+  border-color: var(--brand-line);
+  background: var(--surface-3);
+}
+.ea-form button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ea-form button svg {
+  width: 13px;
+  height: 13px;
+}
+.ea-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--defensible);
+  font-weight: 500;
+}
+.ea-done svg {
+  color: var(--defensible);
+}
+.ea-error {
+  flex-basis: 100%;
+  font-size: 12px;
+  color: var(--flagged);
+  font-family: var(--font-mono);
+}
+@media (max-width: 620px) {
+  .early-access {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ea-form {
+    width: 100%;
+  }
+  .ea-form input {
+    flex: 1;
+    width: auto;
+  }
+}
+
+/* ============================================================
    Source-data transparency viewer
    ============================================================ */
 .view-source {

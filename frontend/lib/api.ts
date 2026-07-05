@@ -27,6 +27,23 @@ export async function fetchBenchmarks(
   return res.json();
 }
 
+export type EarlyAccessStatus = "registered" | "already_registered";
+
+export async function submitEarlyAccess(
+  email: string
+): Promise<EarlyAccessStatus> {
+  const res = await fetch(`${API_BASE}/api/early-access`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data?.detail ?? `Signup failed (${res.status})`);
+  }
+  return data.status as EarlyAccessStatus;
+}
+
 export function streamUrl(categoryKey: string, companyId: string): string {
   const params = new URLSearchParams({
     category: categoryKey,
