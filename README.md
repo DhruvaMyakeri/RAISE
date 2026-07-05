@@ -2,6 +2,8 @@
 
 **Grounded AI ROI Intelligence** — a multi-agent system that predicts and *explains* the ROI of a proposed AI project, grounding every number in either the company's own operating data or a real, cited industry benchmark, and explicitly flagging the assumptions that don't hold up.
 
+**Powered by Vultr Serverless Inference + VultronRetriever** as the core reasoning and grounding stack, with **NVIDIA Nemotron** for high-fidelity explainability.
+
 > Built for the RAISE Summit Hackathon 2026 (Vultr track).
 
 ---
@@ -25,6 +27,14 @@ Enterprises spend heavily on AI but can rarely answer a simple question with con
 Existing tools either measure ROI *after* deployment or are static pre-deployment calculators. **Vantage** is different: it's an agentic system that retrieves company data, cross-checks specific numeric claims against cited benchmarks with **visible reasoning**, and shows exactly which assumptions are unvalidated and why.
 
 It's aimed at the analyst who has to build the business case for a mid-size enterprise with an existing operational baseline — not at replacing a consultancy, but at compressing the discovery-and-benchmarking stage from weeks to minutes, with the reasoning shown rather than hidden.
+
+Vultr's Serverless Inference and VultronRetriever power every reasoning and retrieval step; NVIDIA's Nemotron powers the explainability layer that turns raw numbers into a CFO-readable breakdown.
+
+---
+
+## Built for Vultr
+
+This project was built specifically around Vultr's Serverless Inference platform: **VultronRetriever** grounds every claim in real evidence via its `/v1/rerank` endpoint, and **Kimi-K2.6** (confirmed via testing to support tool-calling on Vultr's catalog) drives every planning, validation, and recommendation decision. Vultr is the backbone of the system — NVIDIA's Nemotron is a deliberate, disclosed enhancement layered on top for one specific high-value step, not a replacement for the core stack.
 
 ---
 
@@ -59,14 +69,16 @@ Report ─ side-by-side "Scenario A vs Scenario B" memo + LLM-reasoned
 
 **Hard rule:** LLMs never compute the final ROI number. All arithmetic runs in plain, auditable Python.
 
-### Models
+### Models — built on Vultr, enhanced with NVIDIA
+
+The entire reasoning and retrieval pipeline runs on **Vultr Serverless Inference**. **NVIDIA's Nemotron** (via build.nvidia.com) is used specifically where output quality matters most — explaining the financial reasoning to a human reader.
 
 | Role | Model | Provider |
 |---|---|---|
-| Planner / claim validation | `moonshotai/Kimi-K2.6` (fallback `MiniMaxAI/MiniMax-M2.7`) | Vultr Serverless Inference |
-| Retrieval (rerank) | `vultr/VultronRetrieverCore-Qwen3.5-4.5B` | Vultr Serverless Inference |
-| Explainability | `nvidia/nemotron-3-ultra-550b-a55b` (fallback `zai-org/GLM-5.2-FP8`) | NVIDIA build.nvidia.com (fallback Vultr) |
-| Report recommendation | `MiniMaxAI/MiniMax-M2.7` (fallback `Kimi-K2.6`) | Vultr Serverless Inference |
+| Planner / claim validation | `moonshotai/Kimi-K2.6` (fallback `MiniMaxAI/MiniMax-M2.7`) | **Vultr** Serverless Inference |
+| Retrieval (rerank) | `vultr/VultronRetrieverCore-Qwen3.5-4.5B` | **Vultr** Serverless Inference |
+| Explainability | `nvidia/nemotron-3-ultra-550b-a55b` (fallback `zai-org/GLM-5.2-FP8`) | **NVIDIA** build.nvidia.com (fallback Vultr) |
+| Report recommendation | `MiniMaxAI/MiniMax-M2.7` (fallback `Kimi-K2.6`) | **Vultr** Serverless Inference |
 | ROI math | none — deterministic Python | — |
 
 ---
@@ -100,19 +112,19 @@ Each demo company carries exactly one **intentionally-optimistic claim** (to tes
 ├── backend/
 │   ├── main.py               # FastAPI app (API layer only — no pipeline logic)
 │   ├── api/                  # thin wrappers: pipeline runner, SSE events, JSON memo, source data
-│   ├── agents/               # planner, retrieval, explainability, report
-│   ├── modeling/             # deterministic ROI math + output sanity check
-│   ├── pipeline/             # CLI runners (run_category.py, run_slice.py)
-│   ├── llm/                  # Vultr / NVIDIA clients, rerank
-│   └── config/               # model names + per-agent token budgets
+│   ├── agents/                # planner, retrieval, explainability, report
+│   ├── modeling/              # deterministic ROI math + output sanity check
+│   ├── pipeline/               # CLI runners (run_category.py, run_slice.py)
+│   ├── llm/                     # Vultr / NVIDIA clients, rerank
+│   └── config/                  # model names + per-agent token budgets
 ├── frontend/                 # Next.js 14 app (analyst-console UI)
-│   ├── app/                  # pages, layout, global styles
-│   ├── components/           # agent trace, memo charts, confidence panels, source-data modal
-│   └── lib/                  # API client, types, SSE hook, formatters
+│   ├── app/                    # pages, layout, global styles
+│   ├── components/          # agent trace, memo charts, confidence panels, source-data modal
+│   └── lib/                     # API client, types, SSE hook, formatters
 ├── data/
-│   ├── companies/            # synthetic company profiles
-│   └── benchmarks/           # cited benchmark corpora (+ _research_raw/)
-└── docs/                     # ARCHITECTURE.md, project-plan.md, status
+│   ├── companies/           # synthetic company profiles
+│   └── benchmarks/          # cited benchmark corpora (+ _research_raw/)
+└── docs/                       # ARCHITECTURE.md, project-plan.md, status
 ```
 
 ---
