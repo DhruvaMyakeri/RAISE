@@ -6,6 +6,18 @@
 
 ---
 
+## Screenshots
+
+**Landing — pick a demo company and run a live analysis:**
+
+![Vantage landing page](docs/screenshots/landing.png)
+
+**Analysis complete — LLM-reasoned recommendation and side-by-side scenario comparison:**
+
+![Vantage analysis and scenario comparison](docs/screenshots/analysis.png)
+
+---
+
 ## Why
 
 Enterprises spend heavily on AI but can rarely answer a simple question with confidence: *"How much will this project actually return if we build it?"* Only ~20% of organizations achieve the revenue growth they expect from AI (Deloitte), only ~6% are "high performers" who can attribute real bottom-line impact (McKinsey), and ~30% of GenAI projects are abandoned after proof-of-concept (Gartner).
