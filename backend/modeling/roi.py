@@ -61,8 +61,14 @@ class ScenarioResult:
 
 @dataclass(frozen=True)
 class ModelingOutput:
+    """Generic wrapper for one branch's modeling result (any category).
+
+    ``branch_value`` carries the category's branch choice (hosting
+    architecture, data strategy, or hardware deployment method).
+    """
+
     branch_id: str
-    hosting_architecture: HostingBranch
+    branch_value: str
     inputs: dict[str, Any]
     scenarios: dict[str, dict[str, Any]]
     flagged_assumptions: list[str]
@@ -165,7 +171,7 @@ def run_modeling_tool(inputs: ModelingInputs, branch_id: str) -> ModelingOutput:
     all_flags = list(inputs.flagged_assumptions) + output_flags
     return ModelingOutput(
         branch_id=branch_id,
-        hosting_architecture=inputs.hosting_architecture,
+        branch_value=inputs.hosting_architecture,
         inputs={
             "annual_ticket_volume": inputs.annual_ticket_volume,
             "cost_per_ticket_usd": inputs.cost_per_ticket_usd,

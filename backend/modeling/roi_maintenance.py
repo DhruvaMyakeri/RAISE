@@ -172,7 +172,7 @@ def run_maintenance_modeling_tool(inputs: MaintenanceInputs, branch_id: str) -> 
     all_flags = list(inputs.flagged_assumptions) + output_flags
     return ModelingOutput(
         branch_id=branch_id,
-        hosting_architecture=inputs.hardware_deployment_method,
+        branch_value=inputs.hardware_deployment_method,
         inputs={
             "current_annual_maintenance_spend_usd": inputs.current_annual_maintenance_spend_usd,
             "annual_downtime_cost_usd": inputs.annual_downtime_cost_usd,

@@ -12,17 +12,20 @@ evidence; the LLM reasons about whether the claim fits.
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any
 
 from config.models import (
     BENCHMARK_RETRIEVAL_MODEL,
+    CLAIM_VALIDATION_MODEL,
+    CLAIM_VALIDATION_MODEL_FALLBACK,
     INTERNAL_RETRIEVAL_MODEL,
-    PLANNER_MODEL,
-    PLANNER_MODEL_FALLBACK,
 )
 from config.token_budgets import CLAIM_VALIDATION
 from llm.clients import chat_text, vultr_client
 from llm.rerank import rerank
+
+logger = logging.getLogger(__name__)
 
 VALIDATE_CLAIMS_TOOL: dict[str, Any] = {
     "type": "function",
@@ -67,7 +70,7 @@ VALIDATE_CLAIMS_TOOL: dict[str, Any] = {
 }
 
 
-def _company_docs(company: dict[str, Any], hosting: str) -> list[str]:
+def _company_docs(company: dict[str, Any], branch_value: str) -> list[str]:
     """Build document strings from company profile for rerank grounding.
 
     Works for any category by iterating over all current_operations and
@@ -89,7 +92,7 @@ def _company_docs(company: dict[str, Any], hosting: str) -> list[str]:
             docs.append(f"Project: {v} — {company.get('project_description', '')}.")
         else:
             docs.append(f"{k.replace('_', ' ').title()}: {v}.")
-    docs.append(f"Branch assumption for this run: {hosting}.")
+    docs.append(f"Branch assumption for this run: {branch_value}.")
     docs.append(f"Unknown fields on file: {json.dumps(company.get('unknown_fields', {}))}.")
     docs.append(f"Notes: {company.get('notes', '')}")
     return docs
@@ -102,58 +105,6 @@ def _benchmark_docs(benchmarks: dict[str, Any]) -> list[str]:
             f"[{fact['id']}] {fact['claim']} (source: {fact['source']})"
         )
     return docs
-
-
-def _extract_claims(company: dict[str, Any], hosting: str) -> dict[str, Any]:
-    """Extract numeric claims from company profile for validation.
-
-    Handles all three categories based on which fields exist.
-    """
-    ops = company.get("current_operations", {})
-    proj = company.get("proposed_project", {})
-
-    if "tier1_ticket_share" in ops:
-        # Customer Support AI
-        tier1_share = float(ops["tier1_ticket_share"])
-        claimed_overall = float(
-            proj.get("claimed_deflection_rate_all_tickets", proj.get("claimed_tier1_deflection_rate", 0))
-        )
-        claimed_tier1 = min(claimed_overall / tier1_share, 0.95) if tier1_share > 0 else claimed_overall
-        return {
-            "annual_ticket_volume": float(ops["annual_ticket_volume"]),
-            "cost_per_ticket_usd": float(ops["cost_per_ticket_usd"]),
-            "tier1_ticket_share": tier1_share,
-            "claimed_overall_deflection_rate": claimed_overall,
-            "claimed_tier1_deflection_rate": round(claimed_tier1, 4),
-            "implied_overall_deflection_rate": claimed_overall,
-            "initial_build_cost_usd": float(proj["initial_build_cost_usd"]),
-            "annual_inference_budget_usd": float(proj["annual_inference_budget_usd_claimed"]),
-            "hosting_architecture": hosting,
-        }
-    elif "claimed_conversion_lift_rate" in proj:
-        # Marketing AI
-        return {
-            "monthly_ad_spend_usd": float(ops.get("monthly_ad_spend_usd", 0)),
-            "current_conversion_rate": float(ops.get("current_conversion_rate", 0)),
-            "average_order_value_usd": float(ops.get("average_order_value_usd", 0)),
-            "claimed_conversion_lift_rate": float(proj["claimed_conversion_lift_rate"]),
-            "initial_build_cost_usd": float(proj["initial_build_cost_usd"]),
-            "annual_inference_budget_usd": float(proj["annual_inference_budget_usd_claimed"]),
-            "data_enrichment_strategy": hosting,
-        }
-    elif "claimed_maintenance_spend_reduction_rate" in proj:
-        # Predictive Maintenance AI
-        return {
-            "current_annual_maintenance_spend_usd": float(ops.get("current_annual_maintenance_spend_usd", 0)),
-            "annual_downtime_cost_usd": float(ops.get("annual_downtime_cost_usd", 0)),
-            "claimed_maintenance_spend_reduction_rate": float(proj["claimed_maintenance_spend_reduction_rate"]),
-            "initial_build_cost_usd": float(proj["initial_build_cost_usd"]),
-            "annual_inference_budget_usd": float(proj["annual_inference_budget_usd_claimed"]),
-            "hardware_deployment_method": hosting,
-        }
-    # Fallback
-    return {"initial_build_cost_usd": float(proj.get("initial_build_cost_usd", 0)),
-            "annual_inference_budget_usd": float(proj.get("annual_inference_budget_usd_claimed", 0))}
 
 
 def _build_claim_descriptions(
@@ -295,7 +246,7 @@ def _llm_validate_claims(
 
     client = vultr_client()
     last_err: Exception | None = None
-    for model in (PLANNER_MODEL, PLANNER_MODEL_FALLBACK):
+    for model in (CLAIM_VALIDATION_MODEL, CLAIM_VALIDATION_MODEL_FALLBACK):
         try:
             completion = chat_text(
                 client=client,
@@ -320,6 +271,7 @@ def _llm_validate_claims(
             )
         except Exception as exc:
             last_err = exc
+            logger.warning("claim validation failed on %s, trying next model: %s", model, exc)
             continue
 
     raise RuntimeError(f"LLM claim validation failed on all models: {last_err}")
@@ -402,10 +354,15 @@ def run_retrieval_dialogue(
     *,
     company: dict[str, Any],
     benchmarks: dict[str, Any],
-    hosting_architecture: str,
+    claims: dict[str, Any],
+    branch_field: str,
+    branch_value: str,
     branch_id: str,
 ) -> dict[str, Any]:
-    """Internal ⇄ Benchmark dialogue for one architecture branch.
+    """Internal ⇄ Benchmark dialogue for one scenario branch.
+
+    *claims* is the single-source-of-truth extraction from pipeline.claims —
+    the same dict the Modeling Tool will compute with.
 
     Round 0: Internal reports company claims (grounded via rerank).
     Round 1: LLM validates claims against benchmark evidence + company
@@ -414,7 +371,7 @@ def run_retrieval_dialogue(
     transcript: list[dict[str, Any]] = []
     flagged: list[str] = []
 
-    company_docs = _company_docs(company, hosting_architecture)
+    company_docs = _company_docs(company, branch_value)
     bench_docs = _benchmark_docs(benchmarks)
     fact_index = {f["id"]: f for f in benchmarks.get("facts", [])}
 
@@ -422,13 +379,12 @@ def run_retrieval_dialogue(
     internal_hits = rerank(
         model=INTERNAL_RETRIEVAL_MODEL,
         query=(
-            "Extract company support ticket volume, cost per ticket, Tier-1 share, "
-            "claimed deflection rate, build cost, and inference budget for ROI modeling."
+            "Extract company operating volumes, unit costs, claimed benefit rates, "
+            "build cost, and inference budget for ROI modeling."
         ),
         documents=company_docs,
         top_n=8,
     )
-    claims = _extract_claims(company, hosting_architecture)
     transcript.append(
         {
             "speaker": "internal_retrieval",
@@ -513,7 +469,7 @@ def run_retrieval_dialogue(
         )
 
     flagged.append(
-        f"assumption, not validated: hosting_architecture={hosting_architecture} "
+        f"assumption, not validated: {branch_field}={branch_value} "
         f"(user unknown; branch {branch_id})"
     )
 
@@ -525,7 +481,8 @@ def run_retrieval_dialogue(
 
     return {
         "branch_id": branch_id,
-        "hosting_architecture": hosting_architecture,
+        "branch_field": branch_field,
+        "branch_value": branch_value,
         "reconciled_inputs": claims,
         "flagged_assumptions": flagged,
         "transcript": transcript,

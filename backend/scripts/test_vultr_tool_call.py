@@ -2,7 +2,7 @@
 
 Usage:
   python backend/scripts/test_vultr_tool_call.py [model_id]
-Default model is the confirmed Planner id from config.models.
+Default model is the confirmed claim-validation id from config.models.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from openai import OpenAI
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
-from config.models import PLANNER_MODEL  # noqa: E402
+from config.models import CLAIM_VALIDATION_MODEL  # noqa: E402
 from config.token_budgets import SMOKE_TEST  # noqa: E402
 
 load_dotenv(ROOT / ".env")
@@ -27,7 +27,7 @@ if not API_KEY:
     print("ERROR: VULTR_API_KEY not set in .env", file=sys.stderr)
     sys.exit(1)
 
-MODEL = sys.argv[1] if len(sys.argv) > 1 else PLANNER_MODEL
+MODEL = sys.argv[1] if len(sys.argv) > 1 else CLAIM_VALIDATION_MODEL
 
 client = OpenAI(
     base_url="https://api.vultrinference.com/v1",

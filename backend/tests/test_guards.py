@@ -5,10 +5,10 @@ These are the trust mechanisms the product's pitch depends on.
 
 from __future__ import annotations
 
+from agents.explainability import parse_overall_confidence as _parse_overall_confidence
 from agents.report import (
     _cited_confidence_numbers,
     _confidence_citations_valid,
-    _parse_overall_confidence,
     _truncate_at_sentence,
 )
 from agents.retrieval import _guard_citations

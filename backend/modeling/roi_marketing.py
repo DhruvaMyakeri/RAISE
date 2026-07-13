@@ -168,7 +168,7 @@ def run_marketing_modeling_tool(inputs: MarketingInputs, branch_id: str) -> Mode
     all_flags = list(inputs.flagged_assumptions) + output_flags
     return ModelingOutput(
         branch_id=branch_id,
-        hosting_architecture=inputs.data_enrichment_strategy,
+        branch_value=inputs.data_enrichment_strategy,
         inputs={
             "monthly_ad_spend_usd": inputs.monthly_ad_spend_usd,
             "current_conversion_rate": inputs.current_conversion_rate,

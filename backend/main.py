@@ -27,9 +27,8 @@ from api.companies import (  # noqa: E402
     load_company_profile,
     resolve_run_inputs,
 )
-from api.events import CallbackEmitter  # noqa: E402
-from api.pipeline_runner import run_pipeline  # noqa: E402
-from pipeline.run_category import CATEGORIES  # noqa: E402
+from pipeline.core import CATEGORIES, run_pipeline  # noqa: E402
+from pipeline.events import CallbackEmitter  # noqa: E402
 
 app = FastAPI(
     title="Vantage API",
