@@ -1,6 +1,9 @@
-# Praxis (working name) — Full Project Status
+# Vantage — Full Project Status
 ### RAISE Summit Hackathon 2026 — Vultr Track
 **As of:** July 4, 2026
+
+> **Historical snapshot (hackathon, 2026-07-04).** Kept for context. For current
+> architecture see ARCHITECTURE.md; for post-hackathon changes see REMEDIATION_LOG.md.
 
 ---
 

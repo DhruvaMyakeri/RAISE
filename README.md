@@ -30,44 +30,53 @@ It's aimed at the analyst who has to build the business case for a mid-size ente
 
 ## How it works
 
-Six stages — five LLM-driven agents plus one deterministic tool:
+One deterministic planning step, then three LLM-driven stages per scenario
+branch, then a deterministic memo assembly — all through a single pipeline
+implementation (`backend/pipeline/core.py`):
 
 ```
 Company Profile
       │
       ▼
-Planner ─ classify category, detect unknown fields, branch on uncertainty
-      │
+Branch construction ─ deterministic: 2 scenario branches for the
+   category's unknown decision (e.g. on-prem vs cloud)
+      │                                  (branches run in parallel)
       ▼
 Retrieval (per branch)
    Internal retrieval (rerank) → Benchmark retrieval (rerank)
-      → LLM claim validation (judges each claim against benchmark evidence)
+      → LLM claim validation (judges each claim against benchmark evidence;
+        hallucinated citations structurally rejected)
       │
       ▼
 Modeling Tool ─ deterministic Python: HTEC ROI formula, 3 scenarios
    (conservative / likely / optimistic), non-linear Y2+ cost scaling,
-   output-level sanity check
+   output-level sanity check — locked by unit tests with hand-derived values
       │
       ▼
-Explainability ─ breaks the projection down by Slalom ROI dimension,
-   with a confidence score per dimension
+Explainability ─ breaks the projection down by ROI dimension with a
+   confidence score per dimension (structured JSON tail + streamed prose)
       │
       ▼
 Report ─ side-by-side "Scenario A vs Scenario B" memo + LLM-reasoned
-   recommendation
+   recommendation (cited confidence figures verified against real scores)
 ```
 
-**Hard rule:** LLMs never compute the final ROI number. All arithmetic runs in plain, auditable Python.
+**Hard rule:** LLMs never compute the final ROI number. All arithmetic runs in plain, auditable, unit-tested Python.
+
+> An earlier iteration used a Planner LLM for classification/branching; it was
+> retired during remediation because branch construction is deterministic and
+> the LLM added failure modes without adding decisions
+> (see `docs/REMEDIATION_LOG.md`).
 
 ### Models
 
 | Role | Model | Provider |
 |---|---|---|
-| Planner / claim validation | `moonshotai/Kimi-K2.6` (fallback `MiniMaxAI/MiniMax-M2.7`) | Vultr Serverless Inference |
+| Claim validation | `moonshotai/Kimi-K2.6` (fallback `MiniMaxAI/MiniMax-M2.7`) | Vultr Serverless Inference |
 | Retrieval (rerank) | `vultr/VultronRetrieverCore-Qwen3.5-4.5B` | Vultr Serverless Inference |
 | Explainability | `nvidia/nemotron-3-ultra-550b-a55b` (fallback `zai-org/GLM-5.2-FP8`) | NVIDIA build.nvidia.com (fallback Vultr) |
 | Report recommendation | `MiniMaxAI/MiniMax-M2.7` (fallback `Kimi-K2.6`) | Vultr Serverless Inference |
-| ROI math | none — deterministic Python | — |
+| Branch planning / ROI math | none — deterministic Python | — |
 
 ---
 
@@ -98,13 +107,15 @@ Each demo company carries exactly one **intentionally-optimistic claim** (to tes
 ```
 .
 ├── backend/
-│   ├── main.py               # FastAPI app (API layer only — no pipeline logic)
-│   ├── api/                  # thin wrappers: pipeline runner, SSE events, JSON memo, source data
-│   ├── agents/               # planner, retrieval, explainability, report
+│   ├── main.py               # FastAPI app (auth, rate limits, SSE — no pipeline logic)
+│   ├── api/                  # request schemas, memo JSON builder, company registry
+│   ├── agents/               # retrieval + claim validation, explainability, report
 │   ├── modeling/             # deterministic ROI math + output sanity check
-│   ├── pipeline/             # CLI runners (run_category.py, run_slice.py)
+│   ├── pipeline/             # core.py (THE pipeline), claims.py, events.py, CLI runner
 │   ├── llm/                  # Vultr / NVIDIA clients, rerank
-│   └── config/               # model names + per-agent token budgets
+│   ├── config/               # model names + per-agent token budgets
+│   ├── tests/                # offline unit + regression tests (pytest)
+│   └── evals/                # live model-behavior evals (capped, run manually/nightly)
 ├── frontend/                 # Next.js 14 app (analyst-console UI)
 │   ├── app/                  # pages, layout, global styles
 │   ├── components/           # agent trace, memo charts, confidence panels, source-data modal
@@ -112,7 +123,7 @@ Each demo company carries exactly one **intentionally-optimistic claim** (to tes
 ├── data/
 │   ├── companies/            # synthetic company profiles
 │   └── benchmarks/           # cited benchmark corpora (+ _research_raw/)
-└── docs/                     # ARCHITECTURE.md, project-plan.md, status
+└── docs/                     # ARCHITECTURE.md, REMEDIATION_LOG.md, EVAL_LOG.md, ...
 ```
 
 ---
@@ -136,6 +147,11 @@ cp .env.example .env
 VULTR_API_KEY=your_vultr_serverless_inference_key_here
 NVIDIA_API_KEY=your_nvidia_api_key_here
 ```
+
+Optional hardening variables (recommended before deploying anywhere public —
+see `.env.example` for the full list): `VANTAGE_API_TOKEN` (shared bearer
+token required on run/signup endpoints; auth is off when unset),
+`CORS_ORIGINS`, `VANTAGE_RUN_RATE_LIMIT`, `VANTAGE_SIGNUP_RATE_LIMIT`.
 
 ### 2. Backend
 
@@ -189,9 +205,38 @@ Output is also written to `backend/pipeline/last_memo_<category>.txt`.
 | `GET` | `/api/run/stream` | Stream pipeline progress as Server-Sent Events (per-stage, per-branch) |
 | `GET` | `/api/companies/{company_id}/source` | Raw company profile JSON (read-only transparency) |
 | `GET` | `/api/benchmarks/{category_key}` | Full benchmark corpus JSON (read-only transparency) |
+| `POST` | `/api/early-access` | Early-access email signup |
 | `GET` | `/health` | Health check |
 
-`POST /api/run` accepts `{ "category": "customer_support", "company_id": "meridian-retail-support" }` (or inline `company` JSON).
+`POST /api/run` accepts `{ "category": "customer_support", "company_id": "meridian-retail-support" }`
+or an inline `company` JSON profile, which is schema-validated (422 on bad
+input) **before** any LLM call. When `VANTAGE_API_TOKEN` is set, `/api/run`,
+`/api/run/stream` (via `Authorization` header or `?token=`), and
+`/api/early-access` require it; run endpoints are rate-limited per IP.
+
+---
+
+## Tests & evals
+
+```bash
+# Offline unit + regression tests (no provider calls; run in CI on every push)
+python -m pytest backend/tests
+
+# Lint
+ruff check backend
+
+# Live model-behavior evals (spends provider credits — capped, run manually/nightly)
+cd backend
+python -m evals.run --mock    # free harness smoke (CI)
+python -m evals.run --live    # scored against real providers
+```
+
+The deterministic modeling core is locked by tests with independently
+hand-derived expected values; the full pipeline has a golden regression per
+category with providers mocked. Probabilistic LLM behavior (claim-validation
+accuracy, citation discipline, explanation format compliance, recommendation
+confidence integrity) is scored separately by the eval suite — results in
+`docs/EVAL_LOG.md`.
 
 ---
 
@@ -200,9 +245,10 @@ Output is also written to `backend/pipeline/last_memo_<category>.txt`.
 - Benchmark data is real and cited but mostly **secondary citations** (an article citing the primary McKinsey/Gartner report, not the report itself).
 - No adoption / change-management-probability modeling — costs and benefits assume successful deployment.
 - Retrieval is a single LLM validation call reasoning over claims *and* benchmark evidence together, not two agents debating in turns.
-- The NVIDIA free-tier Explainability endpoint rate-limits under load; a tested Vultr GLM fallback exists but produces lower-quality prose.
+- The NVIDIA free-tier Explainability endpoint rate-limits under load; a tested Vultr GLM fallback exists but produces lower-quality prose and may skip the structured data tail (a legacy prose parse then applies).
 - Predictive Maintenance's ROI sanity-check ceiling (5.0x) is a modeling assumption, not a corpus-cited figure — no published ROI-multiple benchmark exists for that category in the researched set.
-- Marketing and Predictive Maintenance branch deterministically; only Customer Support uses the Planner LLM for branch construction.
+- Branch construction is deterministic for all categories (the Planner-LLM path was retired during remediation — see `docs/REMEDIATION_LOG.md`).
+- Inline company profiles are schema-validated and length-capped, but free-text fields still reach LLM prompts; treat verdict wording on untrusted profiles accordingly.
 
 ---
 

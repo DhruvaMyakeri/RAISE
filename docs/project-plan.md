@@ -1,3 +1,6 @@
+> **Historical planning document (pre-build).** The implementation deviates in
+> documented ways — ARCHITECTURE.md describes the system as it actually runs.
+
 # AI ROI Agent — Project Plan (RAISE Hackathon 2026)
 
 **Track:** Vultr — Enterprise Agent grounded in documents, multi-step, tool-calling
