@@ -20,6 +20,9 @@ jobs:
         run: ruff check backend
       - name: Unit + regression tests (offline, providers mocked)
         run: python -m pytest backend/tests
+      - name: Eval harness smoke (mocked — live evals run manually/nightly)
+        run: python -m evals.run --mock
+        working-directory: backend
 
   frontend:
     runs-on: ubuntu-latest
