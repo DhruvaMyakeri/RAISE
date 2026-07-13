@@ -25,13 +25,13 @@ from agents.explainability import explain_branch  # noqa: E402
 from agents.report import assemble_memo  # noqa: E402
 from agents.retrieval import run_retrieval_dialogue  # noqa: E402
 from modeling.roi import MODELING_TOOL_SCHEMA, modeling_tool_from_args  # noqa: E402
-from modeling.roi_marketing import (  # noqa: E402
-    MARKETING_MODELING_TOOL_SCHEMA,
-    marketing_modeling_from_args,
-)
 from modeling.roi_maintenance import (  # noqa: E402
     MAINTENANCE_MODELING_TOOL_SCHEMA,
     maintenance_modeling_from_args,
+)
+from modeling.roi_marketing import (  # noqa: E402
+    MARKETING_MODELING_TOOL_SCHEMA,
+    marketing_modeling_from_args,
 )
 
 # Category configuration

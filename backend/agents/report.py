@@ -38,11 +38,10 @@ def _parse_overall_confidence(explanation: str) -> int | None:
     """
     if not explanation:
         return None
-    match = None
-    for match in _OVERALL_CONF_RE.finditer(explanation):
-        pass  # keep the last "overall confidence" mention
-    if match:
-        val = int(match.group(1))
+    matches = list(_OVERALL_CONF_RE.finditer(explanation))
+    if matches:
+        # keep the last "overall confidence" mention
+        val = int(matches[-1].group(1))
         if 0 <= val <= 100:
             return val
     return None
@@ -183,8 +182,8 @@ def _scenario_block(label: str, branch: dict[str, Any]) -> str:
         rows.append(("Maintenance savings/yr", _fmt_usd(con.get("maintenance_savings_annual", 0)), _fmt_usd(lik.get("maintenance_savings_annual", 0)), _fmt_usd(opt.get("maintenance_savings_annual", 0))))
         rows.append(("Avoided downtime value/yr", _fmt_usd(con.get("avoided_downtime_value_annual", 0)), _fmt_usd(lik.get("avoided_downtime_value_annual", 0)), _fmt_usd(opt.get("avoided_downtime_value_annual", 0))))
 
-    for name, c, l, o in rows:
-        lines.append(f"| {name} | {c} | {l} | {o} |")
+    for name, c_val, l_val, o_val in rows:
+        lines.append(f"| {name} | {c_val} | {l_val} | {o_val} |")
 
     # Cost breakdown from likely scenario
     bd = lik.get("cost_breakdown") or {}
@@ -328,7 +327,7 @@ def assemble_memo(
         f"MEMO: AI ROI — {project_name}",
         "",
         f"TO: Chief Financial Officer, {company_name}",
-        f"FROM: AI Investment Analysis Team",
+        "FROM: AI Investment Analysis Team",
         f"RE: ROI Projection — {project_name} ({category})",
         "",
         "---",

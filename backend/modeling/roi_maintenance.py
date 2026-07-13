@@ -8,10 +8,15 @@ Branch field: hardware_deployment_method ("retrofit" vs "new_install")
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import Any, Literal
 
-from modeling.roi import FinancialScenario, ModelingOutput, _Y2_INTEGRATION_SCALE, _Y2_MODEL_UPDATE_SCALE
+from modeling.roi import (
+    _Y2_INTEGRATION_SCALE,
+    _Y2_MODEL_UPDATE_SCALE,
+    FinancialScenario,
+    ModelingOutput,
+)
 from modeling.sanity_check import check_outputs
 
 HardwareBranch = Literal["retrofit", "new_install"]

@@ -1,0 +1,22 @@
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+pythonpath = ["backend"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["frontend", "data", "docs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = [
+  "E501",  # long lines in prompts/docstrings are deliberate
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Probe scripts intentionally call load_dotenv() before project imports.
+"backend/scripts/*" = ["E402"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["agents", "api", "config", "llm", "modeling", "pipeline"]

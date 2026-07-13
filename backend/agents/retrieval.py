@@ -111,7 +111,6 @@ def _extract_claims(company: dict[str, Any], hosting: str) -> dict[str, Any]:
     """
     ops = company.get("current_operations", {})
     proj = company.get("proposed_project", {})
-    category = company.get("project_category", "")
 
     if "tier1_ticket_share" in ops:
         # Customer Support AI
@@ -283,10 +282,10 @@ def _llm_validate_claims(
     shown_fact_ids: set[str] = set(claim_ref_ids) | shown_ids_in_docs
 
     prompt = (
-        f"Validate company claims. Call validate_claims.\n\n"
-        f"BENCHMARKS (only these fact IDs may be cited):\n"
+        "Validate company claims. Call validate_claims.\n\n"
+        "BENCHMARKS (only these fact IDs may be cited):\n"
         + "\n".join(f"- {b}" for b in bench_docs_shown) + "\n\n"
-        f"COMPANY DOCS (look for pilots/measured/validated evidence):\n"
+        "COMPANY DOCS (look for pilots/measured/validated evidence):\n"
         + "\n".join(f"- {j}" for j in justify_lines) + "\n\n"
         f"CLAIMS:\n{claim_text}\n\n"
         "Judge each: defensible or flagged. Weigh benchmark fit AND company evidence.\n"

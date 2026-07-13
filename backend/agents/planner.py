@@ -13,7 +13,6 @@ from config.token_budgets import PLANNER
 from llm.clients import chat_text, vultr_client
 from modeling.roi import MODELING_TOOL_SCHEMA, modeling_tool_from_args
 
-
 ROI_DIMENSIONS_CS = [
     "Cost impact",
     "Quality impact",
@@ -241,7 +240,7 @@ def branch_on_unknown(plan: dict[str, Any], user_answer: str) -> dict[str, Any]:
         }
     # Normalize ids/labels for the side-by-side memo
     normalized = []
-    for branch, default in zip(branches["branches"][:2], default_branches):
+    for branch, default in zip(branches["branches"][:2], default_branches, strict=False):
         hosting = branch.get("hosting_architecture") or default["hosting_architecture"]
         normalized.append(
             {

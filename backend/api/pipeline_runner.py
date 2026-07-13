@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from agents.retrieval import run_retrieval_dialogue
-from api.events import CallbackEmitter, EventEmitter, NullEmitter
+from api.events import EventEmitter, NullEmitter
 from api.explain_stream import explain_branch_streaming
 from api.memo_json import (
     _generate_recommendation_structured,

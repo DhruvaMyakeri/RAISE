@@ -47,5 +47,11 @@ Thumbs.db
 tmp/
 temp/
 
+# Pipeline run artifacts (generated output, never commit)
+backend/pipeline/last_memo*.txt
+backend/pipeline/_probe_out.json
+backend/pipeline/api_test_*.json
+backend/_api_run_cs.json
+
 # Early-access signups (captured user data — do not commit)
 data/early_access_signups.jsonl

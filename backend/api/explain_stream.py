@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from agents.explainability import _prompt
 from agents.json_util import message_text
@@ -29,7 +30,6 @@ def explain_branch_streaming(
     )
     messages = [{"role": "user", "content": prompt}]
 
-    last_err: Exception | None = None
     for attempt in range(2):
         try:
             text = _nvidia_stream_with_callback(
@@ -41,8 +41,7 @@ def explain_branch_streaming(
             )
             if text.strip():
                 return text
-        except Exception as exc:
-            last_err = exc
+        except Exception:
             time.sleep(5 * (attempt + 1))
 
     # Fallback: non-streaming Vultr completion, emit in small chunks for UI parity
