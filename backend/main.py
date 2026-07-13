@@ -1,20 +1,38 @@
-"""FastAPI entrypoint — thin wrapper over the existing Vantage pipeline."""
+"""Vantage API — FastAPI entrypoint (API layer only; pipeline logic lives in
+pipeline/core.py).
+
+Security posture:
+- Optional shared bearer token (VANTAGE_API_TOKEN). When set, mutating and
+  LLM-spending endpoints require it; when unset (local demo), auth is off.
+  The SSE endpoint also accepts ?token= because EventSource cannot set headers.
+- Per-IP rate limits on every endpoint that spends provider credits or
+  writes to disk.
+- CORS origins come from CORS_ORIGINS (comma-separated); defaults to the
+  local Next.js dev origin — never "*".
+- 500s return a generic message; full tracebacks go to the server log only.
+"""
 
 from __future__ import annotations
 
 import json
+import logging
+import os
 import queue
 import re
+import secrets
 import sys
 import threading
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 # Ensure backend package imports resolve (same pattern as run_category.py)
 BACKEND = Path(__file__).resolve().parent
@@ -27,22 +45,57 @@ from api.companies import (  # noqa: E402
     load_company_profile,
     resolve_run_inputs,
 )
+from api.schemas import validate_company_profile  # noqa: E402
 from pipeline.core import CATEGORIES, run_pipeline  # noqa: E402
-from pipeline.events import CallbackEmitter  # noqa: E402
+from pipeline.events import CallbackEmitter, CancelToken, PipelineCancelled  # noqa: E402
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+logger = logging.getLogger("vantage.api")
+
+RUN_RATE_LIMIT = os.environ.get("VANTAGE_RUN_RATE_LIMIT", "6/minute")
+SIGNUP_RATE_LIMIT = os.environ.get("VANTAGE_SIGNUP_RATE_LIMIT", "5/minute")
+_SSE_QUEUE_POLL_SECONDS = 15.0
+
+limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
     title="Vantage API",
     description="Multi-agent ROI prediction pipeline",
-    version="0.1.0",
+    version="0.2.0",
 )
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+def _cors_origins() -> list[str]:
+    raw = os.environ.get("CORS_ORIGINS", "")
+    origins = [o.strip() for o in raw.split(",") if o.strip()]
+    return origins or ["http://localhost:3000", "http://127.0.0.1:3000"]
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins(),
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Authorization", "Content-Type"],
 )
+
+
+def require_token(request: Request) -> None:
+    """Shared bearer-token gate. No-op when VANTAGE_API_TOKEN is unset (local demo)."""
+    expected = os.environ.get("VANTAGE_API_TOKEN", "").strip()
+    if not expected:
+        return
+    auth = request.headers.get("authorization", "")
+    supplied = ""
+    if auth.lower().startswith("bearer "):
+        supplied = auth[7:].strip()
+    if not supplied:
+        # EventSource cannot set headers; allow ?token= for the SSE endpoint.
+        supplied = request.query_params.get("token", "")
+    if not supplied or not secrets.compare_digest(supplied, expected):
+        raise HTTPException(status_code=401, detail="Invalid or missing API token.")
 
 
 # --- Early-access email capture (simple flat-file store, no external service) ---
@@ -50,16 +103,16 @@ DATA_DIR = BACKEND.parent / "data"
 EARLY_ACCESS_FILE = DATA_DIR / "early_access_signups.jsonl"
 _EARLY_ACCESS_LOCK = threading.Lock()
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+_MAX_EMAIL_LEN = 254
+
+# Loaded once, kept in memory; the file is only ever appended to by this process.
+_signup_emails: set[str] | None = None
 
 
-class EarlyAccessRequest(BaseModel):
-    email: str = Field(..., description="Email address to register for early access")
-
-
-def _existing_signup_emails() -> set[str]:
-    if not EARLY_ACCESS_FILE.exists():
-        return set()
+def _load_signup_emails() -> set[str]:
     emails: set[str] = set()
+    if not EARLY_ACCESS_FILE.exists():
+        return emails
     with EARLY_ACCESS_FILE.open(encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -75,6 +128,10 @@ def _existing_signup_emails() -> set[str]:
     return emails
 
 
+class EarlyAccessRequest(BaseModel):
+    email: str = Field(..., max_length=_MAX_EMAIL_LEN)
+
+
 class RunRequest(BaseModel):
     category: str | None = Field(
         None,
@@ -85,6 +142,33 @@ class RunRequest(BaseModel):
         None,
         description="Inline company profile JSON (optional alternative to company_id)",
     )
+
+
+def _resolve_and_validate(
+    category: str | None, company_id: str | None, company: dict[str, Any] | None
+) -> tuple[str, dict[str, Any]]:
+    """Resolve run inputs; inline profiles are schema-validated before any LLM call."""
+    try:
+        category_key, resolved = resolve_run_inputs(
+            category=category, company_id=company_id, company=company
+        )
+    except (KeyError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    if category_key not in CATEGORIES:
+        raise HTTPException(status_code=400, detail=f"Unknown category: {category_key}")
+
+    if company is not None:
+        try:
+            validate_company_profile(category_key, resolved)
+        except ValidationError as exc:
+            errors = "; ".join(
+                f"{'.'.join(str(p) for p in e['loc'])}: {e['msg']}" for e in exc.errors()
+            )
+            raise HTTPException(
+                status_code=422, detail=f"Invalid company profile: {errors}"
+            ) from exc
+    return category_key, resolved
 
 
 @app.get("/api/companies")
@@ -114,45 +198,32 @@ def get_benchmarks(category_key: str) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
-@app.post("/api/run")
-def post_run(body: RunRequest) -> dict[str, Any]:
-    try:
-        category_key, company = resolve_run_inputs(
-            category=body.category,
-            company_id=body.company_id,
-            company=body.company,
-        )
-    except (KeyError, ValueError) as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-    if category_key not in CATEGORIES:
-        raise HTTPException(status_code=400, detail=f"Unknown category: {category_key}")
-
+@app.post("/api/run", dependencies=[Depends(require_token)])
+@limiter.limit(RUN_RATE_LIMIT)
+def post_run(request: Request, body: RunRequest) -> dict[str, Any]:
+    category_key, company = _resolve_and_validate(body.category, body.company_id, body.company)
     try:
         return run_pipeline(category_key, company)
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    except Exception:
+        logger.exception("pipeline run failed (category=%s)", category_key)
+        raise HTTPException(
+            status_code=500,
+            detail="Pipeline run failed. See server logs for details.",
+        ) from None
 
 
-@app.get("/api/run/stream")
+@app.get("/api/run/stream", dependencies=[Depends(require_token)])
+@limiter.limit(RUN_RATE_LIMIT)
 def get_run_stream(
+    request: Request,
     category: str | None = Query(None),
     company_id: str | None = Query(None),
 ) -> StreamingResponse:
-    try:
-        category_key, company = resolve_run_inputs(
-            category=category,
-            company_id=company_id,
-            company=None,
-        )
-    except (KeyError, ValueError) as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-    if category_key not in CATEGORIES:
-        raise HTTPException(status_code=400, detail=f"Unknown category: {category_key}")
+    category_key, company = _resolve_and_validate(category, company_id, None)
 
     def event_stream():
         q: queue.Queue[tuple[str, dict[str, Any] | None]] = queue.Queue()
+        cancel = CancelToken()
 
         def on_event(event_type: str, data: dict[str, Any]) -> None:
             q.put((event_type, data))
@@ -160,21 +231,39 @@ def get_run_stream(
         def worker() -> None:
             try:
                 emitter = CallbackEmitter(on_event)
-                run_pipeline(category_key, company, emitter=emitter)
-            except Exception as exc:
-                q.put(("error", {"message": str(exc), "type": type(exc).__name__}))
+                run_pipeline(category_key, company, emitter=emitter, cancel=cancel)
+            except PipelineCancelled:
+                logger.info("pipeline run cancelled (category=%s)", category_key)
+            except Exception:
+                logger.exception("pipeline stream failed (category=%s)", category_key)
+                q.put(
+                    (
+                        "error",
+                        {"message": "Pipeline run failed. See server logs for details."},
+                    )
+                )
             finally:
                 q.put(("__done__", None))
 
         thread = threading.Thread(target=worker, daemon=True)
         thread.start()
 
-        while True:
-            event_type, data = q.get()
-            if event_type == "__done__":
-                break
-            payload = {"event": event_type, "data": data}
-            yield f"data: {json.dumps(payload, default=str)}\n\n"
+        try:
+            while True:
+                try:
+                    event_type, data = q.get(timeout=_SSE_QUEUE_POLL_SECONDS)
+                except queue.Empty:
+                    # Keep-alive comment; also lets a dead connection surface as
+                    # a write error so the finally-block cancels the worker.
+                    yield ": keep-alive\n\n"
+                    continue
+                if event_type == "__done__":
+                    break
+                payload = {"event": event_type, "data": data}
+                yield f"data: {json.dumps(payload, default=str)}\n\n"
+        finally:
+            # Client disconnected or stream finished — stop spending tokens.
+            cancel.cancel()
 
     return StreamingResponse(
         event_stream(),
@@ -187,16 +276,20 @@ def get_run_stream(
     )
 
 
-@app.post("/api/early-access")
-def post_early_access(body: EarlyAccessRequest) -> dict[str, str]:
+@app.post("/api/early-access", dependencies=[Depends(require_token)])
+@limiter.limit(SIGNUP_RATE_LIMIT)
+def post_early_access(request: Request, body: EarlyAccessRequest) -> dict[str, str]:
     """Register an email for early access (append-only JSONL, dedupe by email)."""
+    global _signup_emails
     email = body.email.strip()
     if not _EMAIL_RE.match(email):
         raise HTTPException(status_code=400, detail="Please enter a valid email address.")
 
     normalized = email.lower()
     with _EARLY_ACCESS_LOCK:
-        if normalized in _existing_signup_emails():
+        if _signup_emails is None:
+            _signup_emails = _load_signup_emails()
+        if normalized in _signup_emails:
             return {"status": "already_registered", "email": email}
         DATA_DIR.mkdir(parents=True, exist_ok=True)
         record = {
@@ -205,6 +298,7 @@ def post_early_access(body: EarlyAccessRequest) -> dict[str, str]:
         }
         with EARLY_ACCESS_FILE.open("a", encoding="utf-8") as f:
             f.write(json.dumps(record) + "\n")
+        _signup_emails.add(normalized)
     return {"status": "registered", "email": email}
 
 
