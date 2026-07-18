@@ -254,12 +254,12 @@ export function useAgentRun() {
     }
   }, []);
 
-  const start = useCallback(
-    (categoryKey: string, companyId: string) => {
+  const startUrl = useCallback(
+    (url: string) => {
       closeStream();
       finishedRef.current = false;
       dispatch({ type: "begin" });
-      const es = new EventSource(streamUrl(categoryKey, companyId));
+      const es = new EventSource(url);
       esRef.current = es;
 
       es.onmessage = (e: MessageEvent) => {
@@ -294,6 +294,13 @@ export function useAgentRun() {
     [closeStream]
   );
 
+  const start = useCallback(
+    (categoryKey: string, companyId: string) => {
+      startUrl(streamUrl(categoryKey, companyId));
+    },
+    [startUrl]
+  );
+
   const reset = useCallback(() => {
     closeStream();
     finishedRef.current = false;
@@ -302,5 +309,5 @@ export function useAgentRun() {
 
   useEffect(() => () => closeStream(), [closeStream]);
 
-  return { state, start, reset };
+  return { state, start, startUrl, reset };
 }

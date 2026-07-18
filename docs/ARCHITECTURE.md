@@ -225,10 +225,26 @@ branch results and recommendation.
 | `GET /api/companies` | open | — | demo company list |
 | `GET /api/companies/{id}/source` | open | — | raw profile (transparency) |
 | `GET /api/benchmarks/{key}` | open | — | benchmark corpus (transparency) |
+| `GET /api/intake/fields` | open | — | custom-intake field specs (form renders from this) |
+| `POST /api/extract-profile` | token | 6/min | PDF/TXT upload → LLM-extracted draft (agents/intake.py) |
+| `POST /api/run/prepare` | token | 6/min | validate intake values → one-time `run_id` (15-min TTL) |
 | `POST /api/run` | token | `VANTAGE_RUN_RATE_LIMIT` (6/min) | sync run → memo JSON |
-| `GET /api/run/stream` | token (`Authorization` or `?token=`) | 6/min | SSE progress events |
+| `GET /api/run/stream` | token (`Authorization` or `?token=`) | 6/min | SSE progress events (`category`+`company_id`, or `run_id`) |
 | `POST /api/early-access` | token | `VANTAGE_SIGNUP_RATE_LIMIT` (5/min) | email capture (JSONL, in-memory dedupe) |
 | `GET /health` | open | — | health check |
+
+**Custom intake (`api/intake_fields.py`, `agents/intake.py`):** field specs
+are the single source of truth for the frontend form, the extraction tool
+schema, and profile assembly — a test asserts that filling exactly the
+required intake fields always satisfies the category's Pydantic schema, so
+the two can't drift. Document extraction (pypdf for PDFs, 20k-char cap)
+feeds an `emit_profile` tool call that must never invent numbers the
+document doesn't state (scored by the `intake_extraction` eval, including a
+prompt-injection probe); the draft pre-fills the form, the **user reviews
+and completes it**, and only the validated result can run — extraction
+output is data on a form, never an instruction channel. Custom runs stage
+the validated profile under a single-use `run_id` because EventSource
+cannot POST a body.
 
 \* Token auth activates only when `VANTAGE_API_TOKEN` is set; local demos run
 open. CORS origins come from `CORS_ORIGINS` (default: localhost:3000 dev

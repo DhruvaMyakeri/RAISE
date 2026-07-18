@@ -66,6 +66,7 @@ def _tool_completion(name: str, arguments: dict[str, Any]) -> SimpleNamespace:
 def install_mocks() -> None:
     """Patch provider seams with deterministic fakes (mirrors live behavior)."""
     import agents.explainability as explainability
+    import agents.intake as intake_agent
     import agents.report as report
     import agents.retrieval as retrieval
 
@@ -120,6 +121,25 @@ def install_mocks() -> None:
                     "confidence_caveat": "Both branches rest on an unvalidated claim.",
                 },
             )
+        if "emit_profile" in names:
+            prompt = messages[-1]["content"]
+            if "Brightleaf" in prompt:
+                return _tool_completion(
+                    "emit_profile",
+                    {"category": "marketing", "company_name": "Brightleaf DTC",
+                     "monthly_ad_spend_usd": 120000, "current_conversion_rate": 0.018,
+                     "average_order_value_usd": 95, "claimed_conversion_lift_rate": 0.35,
+                     "initial_build_cost_usd": 160000,
+                     "annual_inference_budget_usd_claimed": 7200},
+                )
+            return _tool_completion(
+                "emit_profile",
+                {"category": "customer_support", "company_name": "Acme Support Co",
+                 "annual_ticket_volume": 200000, "cost_per_ticket_usd": 9.5,
+                 "tier1_ticket_share": 0.55,
+                 "claimed_deflection_rate_all_tickets": 0.40,
+                 "initial_build_cost_usd": 250000},
+            )
         raise AssertionError(f"unexpected tools: {names}")
 
     def fake_stream(*, model, messages, max_tokens, reasoning_budget, on_chunk=None):
@@ -142,4 +162,6 @@ def install_mocks() -> None:
     retrieval.vultr_client = lambda: None
     report.chat_text = fake_chat_text
     report.vultr_client = lambda: None
+    intake_agent.chat_text = fake_chat_text
+    intake_agent.vultr_client = lambda: None
     explainability._stream_with_callback = fake_stream

@@ -22,11 +22,13 @@ import re
 import secrets
 import sys
 import threading
+import time
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Request
+from fastapi import Depends, FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, ValidationError
@@ -39,12 +41,18 @@ BACKEND = Path(__file__).resolve().parent
 if str(BACKEND) not in sys.path:
     sys.path.insert(0, str(BACKEND))
 
+from agents.intake import (  # noqa: E402
+    DocumentTooThin,
+    extract_profile_fields,
+    prepare_document_text,
+)
 from api.companies import (  # noqa: E402
     list_companies,
     load_benchmark_corpus,
     load_company_profile,
     resolve_run_inputs,
 )
+from api.intake_fields import INTAKE_FIELDS, build_profile  # noqa: E402
 from api.schemas import validate_company_profile  # noqa: E402
 from pipeline.core import CATEGORIES, run_pipeline  # noqa: E402
 from pipeline.events import CallbackEmitter, CancelToken, PipelineCancelled  # noqa: E402
@@ -144,6 +152,40 @@ class RunRequest(BaseModel):
     )
 
 
+class PrepareRunRequest(BaseModel):
+    category: str = Field(..., description="customer_support | marketing | maintenance")
+    values: dict[str, Any] = Field(
+        ..., description="Flat intake-form values (see GET /api/intake/fields)"
+    )
+
+
+# --- Prepared custom runs (EventSource cannot POST a profile) -----------------
+# A validated custom profile is staged under a one-time run_id, then streamed
+# via GET /api/run/stream?run_id=... Entries expire after 15 minutes.
+_PREPARED_RUNS: dict[str, tuple[float, str, dict[str, Any]]] = {}
+_PREPARED_LOCK = threading.Lock()
+_PREPARED_TTL_SECONDS = 15 * 60
+
+
+def _stage_prepared_run(category_key: str, company: dict[str, Any]) -> str:
+    run_id = uuid.uuid4().hex
+    now = time.monotonic()
+    with _PREPARED_LOCK:
+        for key, (created, _, _) in list(_PREPARED_RUNS.items()):
+            if now - created > _PREPARED_TTL_SECONDS:
+                del _PREPARED_RUNS[key]
+        _PREPARED_RUNS[run_id] = (now, category_key, company)
+    return run_id
+
+
+def _pop_prepared_run(run_id: str) -> tuple[str, dict[str, Any]]:
+    with _PREPARED_LOCK:
+        entry = _PREPARED_RUNS.pop(run_id, None)
+    if entry is None or time.monotonic() - entry[0] > _PREPARED_TTL_SECONDS:
+        raise KeyError("Unknown or expired run_id — prepare the run again.")
+    return entry[1], entry[2]
+
+
 def _resolve_and_validate(
     category: str | None, company_id: str | None, company: dict[str, Any] | None
 ) -> tuple[str, dict[str, Any]]:
@@ -198,6 +240,69 @@ def get_benchmarks(category_key: str) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@app.get("/api/intake/fields")
+def get_intake_fields() -> dict[str, Any]:
+    """Field specs the frontend uses to render the custom-intake form."""
+    return INTAKE_FIELDS
+
+
+@app.post("/api/extract-profile", dependencies=[Depends(require_token)])
+@limiter.limit(RUN_RATE_LIMIT)
+async def post_extract_profile(
+    request: Request, file: Annotated[UploadFile, File(...)]
+) -> dict[str, Any]:
+    """Extract intake-form fields from an uploaded PDF/TXT document (LLM).
+
+    Returns a draft — the user reviews and edits it on the form before the
+    profile is validated and run. Nothing extracted here runs unreviewed.
+    """
+    data = await file.read()
+    if len(data) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="File too large (10 MB max).")
+    try:
+        text = prepare_document_text(file.filename or "", data)
+    except DocumentTooThin as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except Exception:
+        logger.exception("document parsing failed (%s)", file.filename)
+        raise HTTPException(
+            status_code=422, detail="Could not read that document. Is it a valid PDF?"
+        ) from None
+    try:
+        return extract_profile_fields(text)
+    except Exception:
+        logger.exception("intake extraction failed")
+        raise HTTPException(
+            status_code=502,
+            detail="Extraction failed. Enter the numbers manually instead.",
+        ) from None
+
+
+@app.post("/api/run/prepare", dependencies=[Depends(require_token)])
+@limiter.limit(RUN_RATE_LIMIT)
+def post_run_prepare(request: Request, body: PrepareRunRequest) -> dict[str, Any]:
+    """Validate a custom intake profile and stage it for streaming.
+
+    Returns {run_id, company} — start the stream with
+    GET /api/run/stream?run_id=<id>.
+    """
+    if body.category not in CATEGORIES:
+        raise HTTPException(status_code=400, detail=f"Unknown category: {body.category}")
+    try:
+        company = build_profile(body.category, body.values)
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=f"Invalid field value: {exc}") from exc
+    try:
+        validate_company_profile(body.category, company)
+    except ValidationError as exc:
+        errors = "; ".join(
+            f"{'.'.join(str(p) for p in e['loc'])}: {e['msg']}" for e in exc.errors()
+        )
+        raise HTTPException(status_code=422, detail=f"Invalid company profile: {errors}") from exc
+    run_id = _stage_prepared_run(body.category, company)
+    return {"run_id": run_id, "category": body.category, "company": company}
+
+
 @app.post("/api/run", dependencies=[Depends(require_token)])
 @limiter.limit(RUN_RATE_LIMIT)
 def post_run(request: Request, body: RunRequest) -> dict[str, Any]:
@@ -218,8 +323,15 @@ def get_run_stream(
     request: Request,
     category: str | None = Query(None),
     company_id: str | None = Query(None),
+    run_id: str | None = Query(None, description="Prepared custom run (POST /api/run/prepare)"),
 ) -> StreamingResponse:
-    category_key, company = _resolve_and_validate(category, company_id, None)
+    if run_id:
+        try:
+            category_key, company = _pop_prepared_run(run_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+    else:
+        category_key, company = _resolve_and_validate(category, company_id, None)
 
     def event_stream():
         q: queue.Queue[tuple[str, dict[str, Any] | None]] = queue.Queue()

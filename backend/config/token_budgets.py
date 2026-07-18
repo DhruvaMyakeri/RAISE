@@ -22,6 +22,10 @@ class AgentBudget(TypedDict, total=False):
 # context and the model reasons before emitting the tool output.
 CLAIM_VALIDATION: Final[AgentBudget] = {"max_tokens": 2500}
 
+# Intake extraction (agents/intake.py) — document -> structured profile fields.
+# The document itself is in the prompt; output is a compact tool call.
+INTAKE_EXTRACTION: Final[AgentBudget] = {"max_tokens": 2000}
+
 # Explainability (nemotron on NVIDIA) — deeper reasoning allowed
 EXPLAINABILITY: Final[AgentBudget] = {
     "max_tokens": 16384,

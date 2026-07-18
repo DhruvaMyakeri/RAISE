@@ -192,3 +192,28 @@ export interface AgentEvent {
   event: AgentEventType;
   data: Record<string, any>;
 }
+
+// ---- Custom intake ----
+export interface IntakeField {
+  name: string;
+  section: "root" | "current_operations" | "proposed_project";
+  kind: "number" | "rate" | "text";
+  label: string;
+  required: boolean;
+  unit?: string;
+}
+
+export interface IntakeCategorySpec {
+  label: string;
+  branch_field: string;
+  branch_question: string;
+  fields: IntakeField[];
+}
+
+export type IntakeFields = Record<string, IntakeCategorySpec>;
+
+export interface ExtractionResult {
+  category_key: string;
+  values: Record<string, string | number>;
+  missing_required: string[];
+}

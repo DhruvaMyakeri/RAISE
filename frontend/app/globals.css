@@ -2109,3 +2109,136 @@ button {
     transform: scale(1.25);
   }
 }
+
+/* ---- Mode tabs (demo vs your company) ---- */
+.mode-tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.mode-tab {
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease, border-color 0.14s ease;
+}
+.mode-tab:hover { color: var(--text); }
+.mode-tab.active {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+/* ---- Custom intake form ---- */
+.intake {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+.intake-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.intake-cats { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.intake-cat {
+  padding: 8px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease, color 0.14s ease;
+}
+.intake-cat:hover:not(:disabled) { border-color: var(--brand-line); }
+.intake-cat.active {
+  background: var(--brand-soft);
+  border-color: var(--brand-line);
+  color: var(--brand-ink);
+}
+.intake-upload {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.intake-extract-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+.intake-extract-note.ok { color: var(--defensible); }
+.intake-extract-note.err { color: var(--flagged); }
+.intake-extract-note svg { width: 13px; height: 13px; }
+.intake-branch-note {
+  font-size: 12.5px;
+  color: var(--text-faint);
+  margin: 4px 0 14px;
+}
+.intake-section { margin-bottom: 16px; }
+.intake-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+.intake-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px 14px;
+}
+.intake-field { display: flex; flex-direction: column; gap: 5px; }
+.intake-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.intake-label em { color: var(--flagged); font-style: normal; }
+.intake-unit {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+.intake-field input {
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 9px 11px;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  color: var(--text);
+  transition: border-color 0.14s ease, box-shadow 0.14s ease;
+}
+.intake-field input:focus { outline: none; border-color: var(--brand-line); }
+.intake-field.missing input {
+  border-color: var(--flagged);
+  box-shadow: 0 0 0 3px var(--flagged-soft);
+}
+.intake-error {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--flagged);
+}

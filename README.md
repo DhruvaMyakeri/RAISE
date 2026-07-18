@@ -184,6 +184,14 @@ Open `http://localhost:3000`. The frontend reads the backend base URL from `fron
 ### Web app
 Pick one of the three demo companies, hit **Run live analysis**, and watch the agents work in real time — stage-by-stage trace, live claim verdicts (defensible / flagged), and token-by-token explainability. When the run completes you get a side-by-side scenario comparison (ROI ranges, payback, cost breakdown), a per-dimension confidence breakdown, and a **View source data** panel to verify every input.
 
+**Your company:** switch to the *Your company* tab to run Vantage on real
+numbers. Fill the category's intake form directly, or **upload a PDF/TXT
+proposal** — an extraction agent pre-fills the form with every figure the
+document states (never guessing missing ones), you review and complete it,
+and the same validated pipeline runs both scenario branches on your data.
+Extracted drafts never run unreviewed, and profiles are schema-validated
+before any LLM call.
+
 ### CLI (no frontend needed)
 Run any category end-to-end and print the full memo to the terminal:
 
@@ -205,6 +213,10 @@ Output is also written to `backend/pipeline/last_memo_<category>.txt`.
 | `GET` | `/api/run/stream` | Stream pipeline progress as Server-Sent Events (per-stage, per-branch) |
 | `GET` | `/api/companies/{company_id}/source` | Raw company profile JSON (read-only transparency) |
 | `GET` | `/api/benchmarks/{category_key}` | Full benchmark corpus JSON (read-only transparency) |
+| `GET` | `/api/intake/fields` | Field specs for the custom-intake form |
+| `POST` | `/api/extract-profile` | Upload a PDF/TXT → LLM-extracted draft profile (reviewed by the user before running) |
+| `POST` | `/api/run/prepare` | Validate custom intake values, stage a one-time `run_id` |
+| `GET` | `/api/run/stream?run_id=` | Stream a prepared custom run (single-use, 15-min TTL) |
 | `POST` | `/api/early-access` | Early-access email signup |
 | `GET` | `/health` | Health check |
 

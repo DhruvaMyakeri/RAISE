@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { fetchCompanies } from "@/lib/api";
-import type { Company } from "@/lib/types";
+import { fetchCompanies, fetchIntakeFields, streamUrlForRun } from "@/lib/api";
+import type { Company, IntakeFields } from "@/lib/types";
 import { useAgentRun } from "@/lib/useAgentRun";
 import { CompanyPicker } from "@/components/CompanyPicker";
+import { CustomIntake } from "@/components/CustomIntake";
 import { AgentTrace } from "@/components/AgentTrace";
 import { MemoView } from "@/components/MemoView";
 import { SourceDataModal } from "@/components/SourceDataModal";
@@ -39,7 +40,10 @@ export default function Page() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [traceOpen, setTraceOpen] = useState(false);
   const [modal, setModal] = useState<ModalState | null>(null);
-  const { state, start, reset } = useAgentRun();
+  const [mode, setMode] = useState<"demo" | "custom">("demo");
+  const [intakeFields, setIntakeFields] = useState<IntakeFields | null>(null);
+  const [customRun, setCustomRun] = useState<{ name: string; category: string } | null>(null);
+  const { state, start, startUrl, reset } = useAgentRun();
 
   useEffect(() => {
     fetchCompanies()
@@ -48,6 +52,9 @@ export default function Page() {
         setSelectedId((prev) => prev ?? cs[0]?.id ?? null);
       })
       .catch((e) => setLoadError(String(e.message ?? e)));
+    fetchIntakeFields()
+      .then(setIntakeFields)
+      .catch(() => setIntakeFields(null));
   }, []);
 
   const selected = useMemo(
@@ -57,11 +64,25 @@ export default function Page() {
 
   const running = state.status === "running";
   const showTrace = state.status !== "idle";
+  const headerName = customRun?.name ?? selected?.name;
+  const headerCategory = customRun?.category ?? selected?.category;
 
   function handleRun() {
     if (!selected) return;
+    setCustomRun(null);
     setTraceOpen(false);
     start(selected.category_key, selected.id);
+  }
+
+  function handleCustomRun(runId: string, companyName: string, categoryLabel: string) {
+    setCustomRun({ name: companyName, category: categoryLabel });
+    setTraceOpen(false);
+    startUrl(streamUrlForRun(runId));
+  }
+
+  function handleReset() {
+    setCustomRun(null);
+    reset();
   }
 
   return (
@@ -96,8 +117,25 @@ export default function Page() {
           </section>
 
           <div className="section-head">
-            <h2>Choose a demo company</h2>
-            <span className="step">STEP 01 / 02</span>
+            <h2>{mode === "demo" ? "Choose a demo company" : "Analyze your own company"}</h2>
+            <div className="mode-tabs" role="tablist" aria-label="Analysis mode">
+              <button
+                role="tab"
+                aria-selected={mode === "demo"}
+                className={`mode-tab ${mode === "demo" ? "active" : ""}`}
+                onClick={() => setMode("demo")}
+              >
+                Demo companies
+              </button>
+              <button
+                role="tab"
+                aria-selected={mode === "custom"}
+                className={`mode-tab ${mode === "custom" ? "active" : ""}`}
+                onClick={() => setMode("custom")}
+              >
+                Your company
+              </button>
+            </div>
           </div>
 
           {loadError ? (
@@ -108,30 +146,37 @@ export default function Page() {
               Could not reach the API at the configured address. Make sure the backend
               is running (uvicorn on port 8001). Details: {loadError}
             </div>
+          ) : mode === "demo" ? (
+            <>
+              <CompanyPicker
+                companies={companies}
+                selectedId={selectedId}
+                onSelect={(c) => setSelectedId(c.id)}
+                onViewSource={(c) =>
+                  setModal({
+                    companyId: c.id,
+                    categoryKey: c.category_key,
+                    companyName: c.name,
+                    initialTab: "profile",
+                  })
+                }
+              />
+              <div className="run-row">
+                <button className="btn-run" onClick={handleRun} disabled={!selected}>
+                  Run live analysis <IconArrow />
+                </button>
+                <span className="run-hint">
+                  streams planner → retrieval → modeling → explainability → recommendation
+                </span>
+              </div>
+            </>
+          ) : intakeFields ? (
+            <CustomIntake fields={intakeFields} onRun={handleCustomRun} />
           ) : (
-            <CompanyPicker
-              companies={companies}
-              selectedId={selectedId}
-              onSelect={(c) => setSelectedId(c.id)}
-              onViewSource={(c) =>
-                setModal({
-                  companyId: c.id,
-                  categoryKey: c.category_key,
-                  companyName: c.name,
-                  initialTab: "profile",
-                })
-              }
-            />
+            <div className="stage" style={{ padding: 18, fontSize: 13.5 }}>
+              Loading intake form…
+            </div>
           )}
-
-          <div className="run-row">
-            <button className="btn-run" onClick={handleRun} disabled={!selected}>
-              Run live analysis <IconArrow />
-            </button>
-            <span className="run-hint">
-              streams planner → retrieval → modeling → explainability → recommendation
-            </span>
-          </div>
 
           <EarlyAccess />
         </>
@@ -143,13 +188,13 @@ export default function Page() {
                 {running ? "Live agent trace" : state.status === "error" ? "Run failed" : "Analysis complete"}
               </div>
               <h2 style={{ fontSize: 22 }}>
-                {selected?.name}{" "}
+                {headerName}{" "}
                 <span style={{ color: "var(--text-faint)", fontWeight: 500 }}>
-                  · {selected?.category}
+                  · {headerCategory}
                 </span>
               </h2>
             </div>
-            <button className="btn-ghost" onClick={reset}>
+            <button className="btn-ghost" onClick={handleReset}>
               {running ? "Cancel" : "New analysis"}
             </button>
           </div>
@@ -168,7 +213,7 @@ export default function Page() {
               <MemoView
                 memo={state.memo}
                 onViewSource={
-                  selected
+                  !customRun && selected
                     ? () =>
                         setModal({
                           companyId: selected.id,

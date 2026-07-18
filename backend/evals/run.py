@@ -24,6 +24,7 @@ THRESHOLDS = {
     "claim_validation": 0.85,
     "explainability_format": 0.75,
     "recommendation_integrity": 0.85,
+    "intake_extraction": 0.80,
 }
 
 
@@ -40,12 +41,18 @@ def main() -> int:
 
         install_mocks()
 
-    from evals import eval_claim_validation, eval_explainability, eval_recommendation
+    from evals import (
+        eval_claim_validation,
+        eval_explainability,
+        eval_intake,
+        eval_recommendation,
+    )
 
     registry = {
         "claim_validation": eval_claim_validation.run_eval,
         "explainability_format": eval_explainability.run_eval,
         "recommendation_integrity": eval_recommendation.run_eval,
+        "intake_extraction": eval_intake.run_eval,
     }
     selected = [s.strip() for s in args.only.split(",") if s.strip()] or list(registry)
 

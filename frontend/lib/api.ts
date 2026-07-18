@@ -53,6 +53,47 @@ export async function submitEarlyAccess(
   return data.status as EarlyAccessStatus;
 }
 
+export async function fetchIntakeFields(): Promise<import("./types").IntakeFields> {
+  const res = await fetch(`${API_BASE}/api/intake/fields`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Failed to load intake fields (${res.status})`);
+  return res.json();
+}
+
+export async function extractProfile(
+  file: File
+): Promise<import("./types").ExtractionResult> {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch(`${API_BASE}/api/extract-profile`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: form,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.detail ?? `Extraction failed (${res.status})`);
+  return data;
+}
+
+export async function prepareRun(
+  category: string,
+  values: Record<string, string | number>
+): Promise<string> {
+  const res = await fetch(`${API_BASE}/api/run/prepare`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify({ category, values }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.detail ?? `Could not prepare run (${res.status})`);
+  return data.run_id as string;
+}
+
+export function streamUrlForRun(runId: string): string {
+  const params = new URLSearchParams({ run_id: runId });
+  if (API_TOKEN) params.set("token", API_TOKEN);
+  return `${API_BASE}/api/run/stream?${params.toString()}`;
+}
+
 export function streamUrl(categoryKey: string, companyId: string): string {
   const params = new URLSearchParams({
     category: categoryKey,
